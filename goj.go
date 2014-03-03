@@ -24,7 +24,7 @@ func (d *Decoder) Decode() (err error) {
 }
 
 func (d *Decoder) String() string {
-	b, _ := json.MarshalIndent(d.v, "", "  ")
+	b, _ := d.MarshalJSON()
 
 	return string(b)
 }
