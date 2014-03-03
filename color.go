@@ -17,9 +17,13 @@ func makeColorFunc(style string) colorFunc {
 		if err != nil {
 			return
 		}
-		dst.Write(color)
+		if len(color) != 0 {
+			dst.Write(color)
+		}
 		dst.Write(b)
-		dst.Write(reset)
+		if len(color) != 0 {
+			dst.Write(reset)
+		}
 		return
 	}
 }
