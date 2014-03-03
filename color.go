@@ -29,6 +29,7 @@ var (
 	green  = makeColorFunc("green")
 	grey   = makeColorFunc("black+b")
 	yellow = makeColorFunc("yellow")
+	plain  = makeColorFunc("plain")
 )
 
 type indent struct {
@@ -51,7 +52,6 @@ func (idt *indent) end(buf *bytes.Buffer, b byte, p int) {
 }
 
 func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
-	var b []byte
 	var p int
 
 	switch x := v.(type) {
@@ -102,11 +102,10 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			return err
 		}
 	default:
-		b, err = json.Marshal(x)
+		err = plain(buf, x)
 		if err != nil {
 			return err
 		}
-		buf.Write(b)
 	}
 	return
 }
