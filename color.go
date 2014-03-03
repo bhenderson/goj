@@ -49,8 +49,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		// json keys must be strings
-		idt.depth++
-		buf.WriteByte('{')
+		idt.writeStart(buf, '{')
 		for k, val := range x {
 			newline(buf, idt)
 			err = blue(buf, k)
@@ -66,15 +65,9 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			p = buf.Len()
 			buf.WriteByte(',')
 		}
-		idt.depth--
-		if p != 0 {
-			buf.Truncate(buf.Len() - 1) // last ,
-			newline(buf, idt)
-		}
-		buf.WriteByte('}')
+		idt.writeEnd(buf, '}', p)
 	case []interface{}:
-		idt.depth++
-		buf.WriteByte('[')
+		idt.writeStart(buf, '[')
 		for _, val := range x {
 			newline(buf, idt)
 			err = colorize(buf, val, idt)
@@ -84,12 +77,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			p = buf.Len()
 			buf.WriteByte(',')
 		}
-		idt.depth--
-		if p != 0 {
-			buf.Truncate(buf.Len() - 1) // last ,
-			newline(buf, idt)
-		}
-		buf.WriteByte(']')
+		idt.writeEnd(buf, ']', p)
 	case int, float64:
 		err = yellow(buf, x)
 		if err != nil {
@@ -113,6 +101,20 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		buf.Write(b)
 	}
 	return
+}
+
+func (idt *indent) writeStart(buf *bytes.Buffer, b byte) {
+	idt.depth++
+	buf.WriteByte(b)
+}
+
+func (idt *indent) writeEnd(buf *bytes.Buffer, b byte, p int) {
+	idt.depth--
+	if p != 0 {
+		buf.Truncate(p)
+		newline(buf, idt)
+	}
+	buf.WriteByte(b)
 }
 
 func newline(buf *bytes.Buffer, idt *indent) {
