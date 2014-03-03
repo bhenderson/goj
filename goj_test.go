@@ -13,14 +13,7 @@ func Test_Decode(t *testing.T) {
 		"a":["b",1]
 	}`
 	output :=
-		`{
-  "\x1b[34ma\x1b[0m": [
-  	"\x1b[32mb\x1b[0m",
-  	"\x1b[33m1\x1b[0m"
-  ],
-  "\x1b[34mhi\x1b[0m": "\x1b[32mmom\x1b[0m",
-  "\x1b[34mn\x1b[0m": \x1b[1;30mnull\x1b[0m
-}`
+		"{\n  \x1b[34m\"hi\"\x1b[0m: \x1b[32m\"mom\"\x1b[0m,\n  \x1b[34m\"n\"\x1b[0m: \x1b[1;30mnull\x1b[0m,\n  \x1b[34m\"a\"\x1b[0m: [\n    \x1b[32m\"b\"\x1b[0m,\n    \x1b[33m1\x1b[0m\n  ]\n}"
 
 	r := strings.NewReader(input)
 	dec := NewDecoder(r)
