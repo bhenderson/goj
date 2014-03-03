@@ -36,12 +36,12 @@ type indent struct {
 	depth          int
 }
 
-func (idt *indent) writeStart(buf *bytes.Buffer, b byte) {
+func (idt *indent) start(buf *bytes.Buffer, b byte) {
 	idt.depth++
 	buf.WriteByte(b)
 }
 
-func (idt *indent) writeEnd(buf *bytes.Buffer, b byte, p int) {
+func (idt *indent) end(buf *bytes.Buffer, b byte, p int) {
 	idt.depth--
 	if p != 0 {
 		buf.Truncate(p)
@@ -57,7 +57,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		// json keys must be strings
-		idt.writeStart(buf, '{')
+		idt.start(buf, '{')
 		for k, val := range x {
 			newline(buf, idt)
 			err = blue(buf, k)
@@ -73,9 +73,9 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			p = buf.Len()
 			buf.WriteByte(',')
 		}
-		idt.writeEnd(buf, '}', p)
+		idt.end(buf, '}', p)
 	case []interface{}:
-		idt.writeStart(buf, '[')
+		idt.start(buf, '[')
 		for _, val := range x {
 			newline(buf, idt)
 			err = colorize(buf, val, idt)
@@ -85,7 +85,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			p = buf.Len()
 			buf.WriteByte(',')
 		}
-		idt.writeEnd(buf, ']', p)
+		idt.end(buf, ']', p)
 	case int, float64:
 		err = yellow(buf, x)
 		if err != nil {
