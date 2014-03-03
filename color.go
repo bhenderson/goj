@@ -6,11 +6,29 @@ import (
 	"github.com/mgutz/ansi"
 )
 
+var reset = []byte(ansi.ColorCode("reset"))
+
+type colorFunc func(dst *bytes.Buffer, v interface{}) error
+
+func makeColorFunc(style string) colorFunc {
+	color := []byte(ansi.ColorCode(style))
+	return func(dst *bytes.Buffer, v interface{}) (err error) {
+		b, err := json.Marshal(v)
+		if err != nil {
+			return
+		}
+		dst.Write(color)
+		dst.Write(b)
+		dst.Write(reset)
+		return
+	}
+}
+
 var (
-	blue   = ansi.ColorFunc("blue")
-	green  = ansi.ColorFunc("green")
-	grey   = ansi.ColorFunc("black+b")
-	yellow = ansi.ColorFunc("yellow")
+	blue   = makeColorFunc("blue")
+	green  = makeColorFunc("green")
+	grey   = makeColorFunc("black+b")
+	yellow = makeColorFunc("yellow")
 )
 
 type indent struct {
@@ -35,11 +53,10 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		buf.WriteByte('{')
 		for k, val := range x {
 			newline(buf, idt)
-			b, err = json.Marshal(k)
+			err = blue(buf, k)
 			if err != nil {
 				return err
 			}
-			buf.WriteString(blue(string(b)))
 			buf.WriteByte(':')
 			buf.WriteByte(' ')
 			err = colorize(buf, val, idt)
@@ -74,23 +91,20 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		}
 		buf.WriteByte(']')
 	case int, float64:
-		b, err = json.Marshal(x)
+		err = yellow(buf, x)
 		if err != nil {
 			return err
 		}
-		buf.WriteString(yellow(string(b)))
 	case string:
-		b, err = json.Marshal(x)
+		green(buf, x)
 		if err != nil {
 			return err
 		}
-		buf.WriteString(green(string(b)))
 	case nil:
-		b, err = json.Marshal(x)
+		grey(buf, x)
 		if err != nil {
 			return err
 		}
-		buf.WriteString(grey(string(b)))
 	default:
 		b, err = json.Marshal(x)
 		if err != nil {
