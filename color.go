@@ -36,10 +36,18 @@ type indent struct {
 	depth          int
 }
 
-func (d Decoder) MarshalJSON() ([]byte, error) {
-	var buf bytes.Buffer
-	err := colorize(&buf, d.v, &indent{indent: "  "})
-	return buf.Bytes(), err
+func (idt *indent) writeStart(buf *bytes.Buffer, b byte) {
+	idt.depth++
+	buf.WriteByte(b)
+}
+
+func (idt *indent) writeEnd(buf *bytes.Buffer, b byte, p int) {
+	idt.depth--
+	if p != 0 {
+		buf.Truncate(p)
+		newline(buf, idt)
+	}
+	buf.WriteByte(b)
 }
 
 func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
@@ -101,20 +109,6 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		buf.Write(b)
 	}
 	return
-}
-
-func (idt *indent) writeStart(buf *bytes.Buffer, b byte) {
-	idt.depth++
-	buf.WriteByte(b)
-}
-
-func (idt *indent) writeEnd(buf *bytes.Buffer, b byte, p int) {
-	idt.depth--
-	if p != 0 {
-		buf.Truncate(p)
-		newline(buf, idt)
-	}
-	buf.WriteByte(b)
 }
 
 func newline(buf *bytes.Buffer, idt *indent) {
