@@ -88,24 +88,12 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		idt.end(buf, ']', p)
 	case int, float64:
 		err = yellow(buf, x)
-		if err != nil {
-			return err
-		}
 	case string:
-		green(buf, x)
-		if err != nil {
-			return err
-		}
+		err = green(buf, x)
 	case nil:
-		grey(buf, x)
-		if err != nil {
-			return err
-		}
+		err = grey(buf, x)
 	default:
 		err = plain(buf, x)
-		if err != nil {
-			return err
-		}
 	}
 	return
 }
