@@ -24,14 +24,9 @@ func (d *Decoder) Decode() (err error) {
 	return d.dec.Decode(&d.v)
 }
 
-func (d Decoder) MarshalJSON() ([]byte, error) {
-	var buf bytes.Buffer
-	err := colorize(&buf, d.v, &indent{indent: "  "})
-	return buf.Bytes(), err
-}
-
 func (d *Decoder) String() string {
-	b, _ := d.MarshalJSON()
+	var buf bytes.Buffer
+	colorize(&buf, d.v, &indent{indent: "  "})
 
-	return string(b)
+	return buf.String()
 }
