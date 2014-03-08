@@ -132,10 +132,13 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 		v = x
 	default:
 		arr = append(arr, x)
-		if arr[len(arr)-2] == "price" {
-			return x, true
+		if !filterVal(arr, path) {
+			return nil, false
 		}
-		return nil, false
 	}
 	return v, true
+}
+
+func filterVal(arr []interface{}, path *Path) bool {
+	return arr[len(arr)-2] == "price"
 }
