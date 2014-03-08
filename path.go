@@ -139,12 +139,3 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 	}
 	return v, true
 }
-
-func filterKey(k interface{}, path *Path) bool {
-	switch x := k.(type) {
-	case string:
-		return x == "price"
-	case int, float32:
-	}
-	return true
-}

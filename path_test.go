@@ -72,7 +72,7 @@ func TestBlah(t *testing.T) {
 
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
-	d2.FilterOn("store")
+	d2.FilterOn("price")
 
 	assert.Equal(t, d1.v, d2.v)
 }
