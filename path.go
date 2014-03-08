@@ -1,6 +1,7 @@
 package goj
 
 import (
+	"log"
 	"strconv"
 )
 
@@ -99,33 +100,47 @@ func col(s string) interface{} {
 }
 
 func (d *Decoder) FilterOn(s string) {
-	filterPath(d.v, NewPath(s))
+	var arr []interface{}
+	filterPath(d.v, arr, NewPath(s))
 }
 
-func filterPath(v interface{}, path *Path) (suc bool) {
-	path.depth++
+func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
-			if !filterKey(key, path) && filterPath(val, path) {
+			arr = append(arr, key)
+			if val, ok := filterPath(val, arr, path); !ok {
 				delete(x, key)
+			} else {
+				x[key] = val
 			}
 		}
 		if len(x) == 0 {
-			return false
+			return nil, false
 		}
 	case []interface{}:
+		// TODO delete is not working
 		for i := 0; i < len(x); i++ {
-			if !filterKey(i, path) && !filterPath(x[i], path) {
+			arr = append(arr, i)
+			if _, ok := filterPath(x[i], arr, path); !ok {
 				// delete i
 				x = append(x[:i], x[i+1:]...)
 			}
 		}
 		if len(x) == 0 {
-			return false
+			return nil, false
+		} else {
+			return x, true
 		}
+	default:
+		arr = append(arr, x)
+		log.Print(arr)
+		if arr[len(arr)-2] == "price" {
+			return x, true
+		}
+		return nil, false
 	}
-	return true
+	return v, true
 }
 
 func filterKey(k interface{}, path *Path) bool {

@@ -44,3 +44,23 @@ func helpPath(s string, exp ...interface{}) ([]interface{}, []interface{}, strin
 	p := NewPath(s)
 	return exp, p.sel, s
 }
+
+func TestBlah(t *testing.T) {
+	input := `{
+		"store": {
+			"bycicles": [
+				{
+					"color": "red",
+					"price": 3.99
+				},
+				{
+					"color": "blue"
+				}
+			]
+		}
+	}`
+
+	dec := testDecoder(t, input)
+	dec.FilterOn("store")
+	t.Log(dec.v)
+}
