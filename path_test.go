@@ -60,7 +60,19 @@ func TestBlah(t *testing.T) {
 		}
 	}`
 
-	dec := testDecoder(t, input)
-	dec.FilterOn("store")
-	t.Log(dec.v)
+	exp := `{
+		"store": {
+			"bycicles": [
+				{
+					"price": 3.99
+				}
+			]
+		}
+	}`
+
+	d1 := testDecoder(t, exp)
+	d2 := testDecoder(t, input)
+	d2.FilterOn("store")
+
+	assert.Equal(t, d1.v, d2.v)
 }

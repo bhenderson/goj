@@ -1,7 +1,6 @@
 package goj
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -129,12 +128,10 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 		}
 		if len(x) == 0 {
 			return nil, false
-		} else {
-			return x, true
 		}
+		v = x
 	default:
 		arr = append(arr, x)
-		log.Print(arr)
 		if arr[len(arr)-2] == "price" {
 			return x, true
 		}
