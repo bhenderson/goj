@@ -48,7 +48,7 @@ func helpPath(s string, exp ...interface{}) ([]interface{}, []interface{}, strin
 func TestBlah(t *testing.T) {
 	input := `{
 		"store": {
-			"bycicles": [
+			"bicycles": [
 				{
 					"color": "red",
 					"price": 3.99
@@ -62,7 +62,7 @@ func TestBlah(t *testing.T) {
 
 	exp := `{
 		"store": {
-			"bycicles": [
+			"bicycles": [
 				{
 					"price": 3.99
 				}
