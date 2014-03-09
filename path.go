@@ -1,6 +1,7 @@
 package goj
 
 import (
+	"log"
 	"strconv"
 )
 
@@ -37,7 +38,10 @@ func (p *Path) compile() {
 			start = len(p.p)
 			break
 		case '.', '[':
-			if start != i {
+			if p.p[i+1] == '.' {
+				p.sel = append(p.sel, p.p[i:i+1])
+				i++
+			} else if start != i {
 				p.sel = append(p.sel, p.p[start:i])
 			}
 			start = i + 1
@@ -57,7 +61,7 @@ type Pair struct {
 }
 
 type PairSlice struct {
-	b, e interface{}
+	b, e, s interface{}
 }
 
 func col(s string) interface{} {
@@ -118,7 +122,6 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 			return nil, false
 		}
 	case []interface{}:
-		// TODO delete is not working
 		for i := 0; i < len(x); i++ {
 			arr = append(arr, i)
 			if _, ok := filterPath(x[i], arr, path); !ok {
@@ -140,5 +143,6 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 }
 
 func filterVal(arr []interface{}, path *Path) bool {
+	log.Print(arr)
 	return arr[len(arr)-2] == "price"
 }

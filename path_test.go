@@ -27,15 +27,21 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`books[0]`, "books", 0)
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0:1]`, PairSlice{0, 1})
+	exp, act, msg = helpPath(`[0:1]`, PairSlice{0, 1, 1})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[-1:]`, PairSlice{-1, nil})
+	exp, act, msg = helpPath(`[-1:]`, PairSlice{-1, nil, 1})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`[0:10:2]`, PairSlice{0, 10, 2})
 	assert.Equal(t, exp, act, msg)
 
 	// books[] <- what does that mean?
 
 	exp, act, msg = helpPath(`[1,2,-1]`, []int{1, 2, -1})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`a=b..c`, Pair{"a", "b"}, "..", "c")
 	assert.Equal(t, exp, act, msg)
 
 }
@@ -54,7 +60,8 @@ func TestBlah(t *testing.T) {
 					"price": 3.99
 				},
 				{
-					"color": "blue"
+					"color": "blue",
+					"price": 2.99
 				}
 			]
 		}
@@ -64,7 +71,7 @@ func TestBlah(t *testing.T) {
 		"store": {
 			"bicycles": [
 				{
-					"price": 3.99
+					"color": "red"
 				}
 			]
 		}
@@ -72,7 +79,7 @@ func TestBlah(t *testing.T) {
 
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
-	d2.FilterOn("price")
+	d2.FilterOn("**.price=3.99..color")
 
 	assert.Equal(t, d1.v, d2.v)
 }
