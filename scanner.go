@@ -104,13 +104,9 @@ L:
 	return f, i
 }
 
-// state after key
+// state after .
 func stateSep(p *Path, data string) (f stateFunc, i int) {
-	f = stateKey
-	if len(data) > 0 && data[0] == '.' {
-		f = stateParent
-	}
-	return
+	return stateParent, i
 }
 
 // look for **
@@ -118,8 +114,11 @@ func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 	return
 }
 
-// state after .
+// state after ..
 func stateParent(p *Path, data string) (f stateFunc, i int) {
-	p.sel = append(p.sel, "..")
-	return stateKey, 1
+	if len(data) > 0 && data[0] == '.' {
+		p.sel = append(p.sel, "..")
+		i++
+	}
+	return stateKey, i
 }
