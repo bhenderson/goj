@@ -11,10 +11,7 @@ func (p *Path) parse() {
 	data := p.p
 	var i, x int
 
-	for {
-		if f == nil || i > len(data) {
-			break
-		}
+	for f != nil && i <= len(data) {
 		f, x = f(p, data[i:])
 		i = i + x
 	}
