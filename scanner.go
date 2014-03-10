@@ -83,7 +83,10 @@ L1:
 		}
 	}
 
-	x, _ := strconv.Atoi(data[:i-1])
+	x, e := strconv.Atoi(data[:i])
+	if e != nil {
+		return
+	}
 	p.sel = append(p.sel, x)
 	i++
 
@@ -118,6 +121,7 @@ func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 	return
 }
 
+// state after .
 func stateParent(p *Path, data string) (f stateFunc, i int) {
 	p.sel = append(p.sel, "..")
 	return stateKey, 1
