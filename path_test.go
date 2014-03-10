@@ -27,7 +27,10 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`[0]`, 0)
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0]`, "books", 0)
+	exp, act, msg = helpPath(`books[0].price`, "books", 0, "price")
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`books[0]..[1].price`, "books", 0, "..", 1, "price")
 	assert.Equal(t, exp, act, msg)
 
 	// exp, act, msg = helpPath(`[*]`, 0)

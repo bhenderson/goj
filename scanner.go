@@ -86,19 +86,21 @@ L:
 	x, _ := strconv.Atoi(data[:i-1])
 	p.sel = append(p.sel, x)
 
-	stateKey(p, data[i+1:])
+	stateSep(p, data[i+1:])
 }
 
 func stateSep(p *Path, data string) {
-	if data[0] == '.' {
-		stateParent(p, data[1:])
-	} else {
-		stateKey(p, data)
+	if len(data) > 0 {
+		if data[0] == '.' {
+			stateParent(p, data[1:])
+		} else {
+			stateKey(p, data)
+		}
 	}
 }
 
 // look for **
-func stateRec(p *Path, data string) {
+func stateRecursive(p *Path, data string) {
 }
 
 func stateParent(p *Path, data string) {
