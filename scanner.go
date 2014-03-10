@@ -12,15 +12,15 @@ func (p *Path) parse() {
 	var i, x int
 
 	for {
-		if f != nil && i <= len(data) {
-			f, x = f(p, data[i:])
-			i = i + x
-		} else {
+		if f == nil || i > len(data) {
 			break
 		}
+		f, x = f(p, data[i:])
+		i = i + x
 	}
 }
 
+// beginning state
 func stateKey(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
@@ -75,26 +75,39 @@ L:
 
 // state after key[
 func stateArray(p *Path, data string) (f stateFunc, i int) {
-L:
+L1:
 	for ; i < len(data); i++ {
 		switch data[i] {
 		case ']':
-			break L
+			break L1
 		}
 	}
 
 	x, _ := strconv.Atoi(data[:i-1])
 	p.sel = append(p.sel, x)
+	i++
+
+L2:
+	for ; i < len(data); i++ {
+		switch data[i] {
+		case '\\':
+			i++
+		case '.':
+			f = stateSep
+			break L2
+			// default error
+		}
+	}
 
 	return stateSep, i + 1
 }
 
+// state after key
 func stateSep(p *Path, data string) (f stateFunc, i int) {
+	f = stateKey
 	if len(data) > 0 {
 		if data[0] == '.' {
-			f, i = stateParent, 1
-		} else {
-			f = stateKey
+			f = stateParent
 		}
 	}
 	return
@@ -107,5 +120,5 @@ func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 
 func stateParent(p *Path, data string) (f stateFunc, i int) {
 	p.sel = append(p.sel, "..")
-	return stateKey, 0
+	return stateKey, 1
 }
