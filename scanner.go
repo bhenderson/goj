@@ -75,11 +75,13 @@ L:
 
 // state after key[
 func stateArray(p *Path, data string) (f stateFunc, i int) {
-L1:
+L:
 	for ; i < len(data); i++ {
 		switch data[i] {
+		case '\\':
+			i++
 		case ']':
-			break L1
+			break L
 		}
 	}
 
@@ -90,28 +92,23 @@ L1:
 	p.sel = append(p.sel, x)
 	i++
 
-L2:
-	for ; i < len(data); i++ {
-		switch data[i] {
-		case '\\':
-			i++
-		case '.':
-			f = stateSep
-			break L2
-			// default error
-		}
+	if len(data) > i && data[i] == '\\' {
+		i++
 	}
 
-	return stateSep, i + 1
+	if len(data) > i && data[i] == '.' {
+		f = stateSep
+		i++
+	}
+
+	return f, i
 }
 
 // state after key
 func stateSep(p *Path, data string) (f stateFunc, i int) {
 	f = stateKey
-	if len(data) > 0 {
-		if data[0] == '.' {
-			f = stateParent
-		}
+	if len(data) > 0 && data[0] == '.' {
+		f = stateParent
 	}
 	return
 }
