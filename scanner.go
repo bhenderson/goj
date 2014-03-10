@@ -105,5 +105,5 @@ func stateRecursive(p *Path, data string) {
 
 func stateParent(p *Path, data string) {
 	p.sel = append(p.sel, "..")
-	stateKey(p, data[1:])
+	stateKey(p, data)
 }
