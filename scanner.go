@@ -4,15 +4,24 @@ import (
 	"strconv"
 )
 
-type stateFunc func(*Path, string)
+type stateFunc func(*Path, string) (stateFunc, int)
 
 func (p *Path) parse() {
-	stateKey(p, p.p)
+	f := stateKey
+	data := p.p
+	var i, x int
+
+	for {
+		if f != nil && i <= len(data) {
+			f, x = f(p, data[i:])
+			i = i + x
+		} else {
+			break
+		}
+	}
 }
 
-func stateKey(p *Path, data string) {
-	var f stateFunc
-	var i int
+func stateKey(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
@@ -37,16 +46,12 @@ L:
 		p.sel = append(p.sel, data[:i])
 	}
 	i++
-	if f != nil && i <= len(data) {
-		f(p, data[i:])
-	}
+	return
 }
 
 // state after key=
-func stateValue(p *Path, data string) {
-	var f stateFunc
+func stateValue(p *Path, data string) (f stateFunc, i int) {
 	var pair Pair
-	var i int
 	pair.key = p.sel[len(p.sel)-1].(string)
 
 L:
@@ -65,16 +70,11 @@ L:
 	}
 
 	p.sel[len(p.sel)-1] = pair
-
-	if f != nil && i < len(data) {
-		f(p, data[i:])
-	}
+	return
 }
 
 // state after key[
-func stateArray(p *Path, data string) {
-	var i int
-
+func stateArray(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
@@ -86,24 +86,26 @@ L:
 	x, _ := strconv.Atoi(data[:i-1])
 	p.sel = append(p.sel, x)
 
-	stateSep(p, data[i+1:])
+	return stateSep, i + 1
 }
 
-func stateSep(p *Path, data string) {
+func stateSep(p *Path, data string) (f stateFunc, i int) {
 	if len(data) > 0 {
 		if data[0] == '.' {
-			stateParent(p, data[1:])
+			f, i = stateParent, 1
 		} else {
-			stateKey(p, data)
+			f = stateKey
 		}
 	}
+	return
 }
 
 // look for **
-func stateRecursive(p *Path, data string) {
+func stateRecursive(p *Path, data string) (f stateFunc, i int) {
+	return
 }
 
-func stateParent(p *Path, data string) {
+func stateParent(p *Path, data string) (f stateFunc, i int) {
 	p.sel = append(p.sel, "..")
-	stateKey(p, data)
+	return stateKey, 0
 }
