@@ -1,7 +1,6 @@
 package goj
 
 import (
-	"log"
 	"strconv"
 )
 
@@ -13,46 +12,8 @@ type Path struct {
 
 func NewPath(s string) *Path {
 	p := &Path{p: s}
-	p.compile()
+	p.parse()
 	return p
-}
-
-func (p *Path) compile() {
-	start := 0
-	for i := 0; i < len(p.p); i++ {
-		switch p.p[i] {
-		case '=':
-			m := Pair{}
-			key := p.p[start:i]
-			if len(key) == 0 {
-				key = "*"
-			}
-			m.key = key
-			val := p.p[i+1:]
-			if len(val) == 0 {
-				m.val = nil
-			} else {
-				m.val = val
-			}
-			p.sel = append(p.sel, m)
-			start = len(p.p)
-			break
-		case '.', '[':
-			if p.p[i+1] == '.' {
-				p.sel = append(p.sel, p.p[i:i+1])
-				i++
-			} else if start != i {
-				p.sel = append(p.sel, p.p[start:i])
-			}
-			start = i + 1
-		case ']':
-			p.sel = append(p.sel, col(p.p[start:i]))
-			start = i + 1
-		}
-	}
-	if start != len(p.p) {
-		p.sel = append(p.sel, p.p[start:])
-	}
 }
 
 type Pair struct {
@@ -143,6 +104,5 @@ func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool
 }
 
 func filterVal(arr []interface{}, path *Path) bool {
-	log.Print(arr)
 	return arr[len(arr)-2] == "price"
 }
