@@ -6,7 +6,15 @@ import (
 
 type stateFunc func(*Path, string) (stateFunc, int)
 
-func (p *Path) parse() {
+type SyntaxError struct {
+	msg string
+}
+
+func (e *SyntaxError) Error() string {
+	return e.msg
+}
+
+func (p *Path) parse() error {
 	f := stateKey
 	data := p.p
 	var i, x int
@@ -15,6 +23,12 @@ func (p *Path) parse() {
 		f, x = f(p, data[i:])
 		i = i + x
 	}
+
+	if p.err != nil {
+		return p.err
+	}
+
+	return nil
 }
 
 // beginning state
@@ -66,6 +80,8 @@ L:
 		pair.val = data[:i]
 	}
 
+	i++
+
 	p.sel[len(p.sel)-1] = pair
 	return
 }
@@ -103,7 +119,10 @@ L:
 
 // state after .
 func stateSep(p *Path, data string) (f stateFunc, i int) {
-	return stateParent, i
+	if len(data) > 0 && data[0] == '.' {
+		return stateParent, i
+	}
+	return stateKey, i
 }
 
 // look for **
@@ -113,9 +132,18 @@ func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 
 // state after ..
 func stateParent(p *Path, data string) (f stateFunc, i int) {
-	if len(data) > 0 && data[0] == '.' {
-		p.sel = append(p.sel, "..")
-		i++
+	if !(len(data) > 0 && data[0] == '.') {
+		f = setError(`expected ".."`)
+		return
 	}
+	p.sel = append(p.sel, "..")
+	i++
 	return stateKey, i
+}
+
+func setError(msg string) stateFunc {
+	return func(p *Path, data string) (f stateFunc, i int) {
+		p.err = &SyntaxError{"invalid path at " + p.p[:len(p.p)-len(data)] + " " + msg}
+		return
+	}
 }

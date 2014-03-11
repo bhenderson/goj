@@ -60,8 +60,28 @@ func TestPath_Compile(t *testing.T) {
 
 }
 
+// `a=b.c` invalid
+
+func TestPath_CompileErrors(t *testing.T) {
+	exp, act, msg := helpPathErr(`a=b.c`, `invalid path at a=b. expected ".."`)
+	assert.Equal(t, exp, act, msg)
+
+}
+
+func helpPathErr(s, exp string) (e, a, m string) {
+	_, err := NewPath(s)
+	if err == nil {
+		return exp, "no error occured", s
+	}
+
+	return exp, err.Error(), s
+}
+
 func helpPath(s string, exp ...interface{}) ([]interface{}, []interface{}, string) {
-	p := NewPath(s)
+	p, e := NewPath(s)
+	if e != nil {
+		panic(e.Error())
+	}
 	return exp, p.sel, s
 }
 

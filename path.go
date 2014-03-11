@@ -8,12 +8,15 @@ type Path struct {
 	p     string
 	sel   []interface{}
 	depth int
+	err   error
 }
 
-func NewPath(s string) *Path {
+func NewPath(s string) (*Path, error) {
 	p := &Path{p: s}
-	p.parse()
-	return p
+	if err := p.parse(); err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 type Pair struct {
@@ -63,9 +66,17 @@ func col(s string) interface{} {
 	return i
 }
 
-func (d *Decoder) FilterOn(s string) {
+func (d *Decoder) FilterOn(s string) error {
 	var arr []interface{}
-	filterPath(d.v, arr, NewPath(s))
+	p, err := NewPath(s)
+
+	if err != nil {
+		return err
+	}
+
+	filterPath(d.v, arr, p)
+
+	return nil
 }
 
 func filterPath(v interface{}, arr []interface{}, path *Path) (interface{}, bool) {
