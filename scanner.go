@@ -110,18 +110,27 @@ L:
 		return
 	}
 	p.sel = append(p.sel, x)
+
+	f = stateArrayEnd
 	i++
 
-	if i < len(data) {
-		if data[i] == '.' {
-			f = stateSep
-		} else {
-			f = addError(`expected "."`)
-		}
-		i++
+	return
+}
+
+// state after ]
+func stateArrayEnd(p *Path, data string) (f stateFunc, i int) {
+	if len(data) == 0 {
+		return
 	}
 
-	return f, i
+	if data[i] == '.' {
+		f = stateSep
+	} else {
+		f = addError(`expected "."`)
+	}
+	i++
+
+	return
 }
 
 // state after .
