@@ -81,7 +81,7 @@ func setValue(p *Path, v interface{}) {
 	p.sel[i] = pair
 }
 
-// state after key= (try integer)
+// state after key= (try number)
 func stateValueNum(p *Path, data string) (f stateFunc, i int) {
 	var fl float32
 	var st string
