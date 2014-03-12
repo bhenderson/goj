@@ -101,12 +101,12 @@ L:
 	p.sel = append(p.sel, x)
 	i++
 
-	if len(data) > i && data[i] == '\\' {
-		i++
-	}
-
-	if len(data) > i && data[i] == '.' {
-		f = stateSep
+	if i < len(data) {
+		if data[i] == '.' {
+			f = stateSep
+		} else {
+			f = addError(`expected "."`)
+		}
 		i++
 	}
 
@@ -129,7 +129,7 @@ func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 // state after ..
 func stateParent(p *Path, data string) (f stateFunc, i int) {
 	if !(len(data) > 0 && data[0] == '.') {
-		f = setError(`expected ".."`)
+		f = addError(`expected ".."`)
 		return
 	}
 	p.sel = append(p.sel, "..")
@@ -137,7 +137,8 @@ func stateParent(p *Path, data string) (f stateFunc, i int) {
 	return stateKey, i
 }
 
-func setError(msg string) stateFunc {
+// addError returns a stateFunc which sets the error.
+func addError(msg string) stateFunc {
 	return func(p *Path, data string) (f stateFunc, i int) {
 		p.err = &SyntaxError{"invalid path at " + p.p[:len(p.p)-len(data)] + " " + msg}
 		return
