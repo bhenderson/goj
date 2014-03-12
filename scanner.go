@@ -28,13 +28,19 @@ func (p *Path) parse() error {
 }
 
 // beginning state
-func stateKey(p *Path, data string) (f stateFunc, i int) {
+func stateKey(p *Path, str string) (f stateFunc, i int) {
+	data := []byte(str)
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
 		case '\\':
 			// escape char. skip next value
 			i++
+			if i >= len(data) {
+				f = addError(`invalid escape character`)
+				return
+			}
+			data = append(data[:i-1], data[i:]...)
 		case '=':
 			f = stateValue
 			if i == 0 {
@@ -50,7 +56,7 @@ L:
 		}
 	}
 	if i != 0 {
-		p.sel = append(p.sel, data[:i])
+		p.sel = append(p.sel, string(data[:i]))
 	}
 	i++
 	return

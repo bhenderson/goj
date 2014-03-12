@@ -60,8 +60,6 @@ func TestPath_Compile(t *testing.T) {
 
 }
 
-// `a=b.c` invalid
-
 func TestPath_CompileErrors(t *testing.T) {
 	exp, act, msg := helpPathErr(`a=b.c`, `invalid path at a=b. expected ".."`)
 	assert.Equal(t, exp, act, msg)
@@ -73,6 +71,15 @@ func TestPath_CompileErrors(t *testing.T) {
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPathErr(`[0]a`, `invalid path at [0]a expected "."`)
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPathErr(`store\`, `invalid path at store\ invalid escape character`)
+	assert.Equal(t, exp, act, msg)
+
+}
+
+func TestPath_CompileEscapeChar(t *testing.T) {
+	exp, act, msg := helpPath(`store\.books`, "store.books")
 	assert.Equal(t, exp, act, msg)
 
 }
