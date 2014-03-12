@@ -97,8 +97,6 @@ func stateArray(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
-		case '\\':
-			i++
 		case ']':
 			break L
 		}
