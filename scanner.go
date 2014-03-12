@@ -24,11 +24,7 @@ func (p *Path) parse() error {
 		i = i + x
 	}
 
-	if p.err != nil {
-		return p.err
-	}
-
-	return nil
+	return p.err
 }
 
 // beginning state
