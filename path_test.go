@@ -76,6 +76,9 @@ func TestPath_CompileErrors(t *testing.T) {
 	exp, act, msg = helpPathErr(`store\`, `invalid path at store\ invalid escape character`)
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPathErr(`[0a]`, `invalid path at [0a invalid index`)
+	assert.Equal(t, exp, act, msg)
+
 }
 
 func TestPath_CompileEscapeChar(t *testing.T) {

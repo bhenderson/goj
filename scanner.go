@@ -106,6 +106,7 @@ L:
 
 	x, e := strconv.Atoi(data[:i])
 	if e != nil {
+		f = addError(`invalid index`)
 		return
 	}
 	p.sel = append(p.sel, x)
