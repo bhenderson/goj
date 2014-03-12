@@ -139,7 +139,7 @@ func stateSep(p *Path, data string) (f stateFunc, i int) {
 	return stateKey, i
 }
 
-// look for **
+// state after **
 func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 	return
 }
