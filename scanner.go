@@ -37,7 +37,7 @@ L:
 			// escape char. skip next value
 			i++
 			if i >= len(data) {
-				f = addError(`invalid escape character`)
+				f = stateEscape
 				return
 			}
 			data = append(data[:i-1], data[i:]...)
@@ -73,7 +73,7 @@ L:
 		case '\\':
 			i++
 			if i >= len(data) {
-				f = addError(`invalid escape character`)
+				f = stateEscape
 				return
 			}
 		case '.':
@@ -154,3 +154,5 @@ func addError(msg string) stateFunc {
 		return
 	}
 }
+
+var stateEscape = addError("invalid escape character")
