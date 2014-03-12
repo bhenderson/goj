@@ -23,16 +23,3 @@ type Pair struct {
 type PairSlice struct {
 	b, e, s interface{}
 }
-
-func (d *Decoder) FilterOn(s string) error {
-	var arr []interface{}
-	p, err := NewPath(s)
-
-	if err != nil {
-		return err
-	}
-
-	filterPath(d.v, arr, p)
-
-	return nil
-}

@@ -7,6 +7,9 @@ import (
 
 func TestPath_FilterOn(t *testing.T) {
 	input := `{
+		"a": {
+			"b": "c"
+		},
 		"store": {
 			"bicycles": [
 				{
@@ -33,7 +36,11 @@ func TestPath_FilterOn(t *testing.T) {
 
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
-	d2.FilterOn("**.price=3.99..color")
+	err := d2.FilterOn("**.price=3\\.99..color")
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	assert.Equal(t, d1.v, d2.v)
 }

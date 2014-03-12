@@ -1,7 +1,9 @@
 package goj
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 )
 
 type stateFunc func(*Path, string) (stateFunc, int)
@@ -65,8 +67,43 @@ L:
 // state after key=
 func stateValue(p *Path, data string) (f stateFunc, i int) {
 	var pair Pair
-	pair.key = p.sel[len(p.sel)-1].(string)
+	x := len(p.sel) - 1
+	pair.key = p.sel[x].(string)
+	p.sel[x] = pair
 
+	return stateValueNum, i
+}
+
+func setValue(p *Path, v interface{}) {
+	i := len(p.sel) - 1
+	pair := p.sel[i].(Pair)
+	pair.val = v
+	p.sel[i] = pair
+}
+
+// state after key= (try integer)
+func stateValueNum(p *Path, data string) (f stateFunc, i int) {
+	var fl float32
+	var st string
+
+	r := strings.NewReader(data)
+	x, _ := fmt.Fscanf(r, "%f%s", &fl, &st)
+
+	if x > 0 {
+		setValue(p, fl)
+		i = len(data) - len(st)
+		if data[i] == '.' {
+			f = stateParent
+		}
+	} else {
+		f = stateValueString
+	}
+
+	return
+}
+
+// state after key=\D
+func stateValueString(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
@@ -83,12 +120,11 @@ L:
 	}
 
 	if i != 0 {
-		pair.val = data[:i]
+		setValue(p, data[:i])
 	}
 
 	i++
 
-	p.sel[len(p.sel)-1] = pair
 	return
 }
 

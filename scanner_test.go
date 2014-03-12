@@ -24,6 +24,12 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`a=b..c`, Pair{"a", "b"}, "..", "c")
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPath(`=3.99..c`, Pair{"*", 3.99}, "..", "c")
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`=3.9*..c`, Pair{"*", "3.9*"}, "..", "c")
+	assert.Equal(t, exp, act, msg)
+
 	exp, act, msg = helpPath(`a..b`, "a", "..", "b")
 	assert.Equal(t, exp, act, msg)
 
