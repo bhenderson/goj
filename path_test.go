@@ -66,6 +66,9 @@ func TestPath_CompileErrors(t *testing.T) {
 	exp, act, msg := helpPathErr(`a=b.c`, `invalid path at a=b. expected ".."`)
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPathErr(`a=b\`, `invalid path at a=b\ invalid escape character`)
+	assert.Equal(t, exp, act, msg)
+
 	exp, act, msg = helpPathErr(`[0]\`, `invalid path at [0]\ expected "."`)
 	assert.Equal(t, exp, act, msg)
 

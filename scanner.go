@@ -66,6 +66,10 @@ L:
 		switch data[i] {
 		case '\\':
 			i++
+			if i >= len(data) {
+				f = addError(`invalid escape character`)
+				return
+			}
 		case '.':
 			f = stateParent
 			break L
