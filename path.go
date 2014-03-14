@@ -2,7 +2,7 @@ package goj
 
 type Path struct {
 	p     string
-	sel   []interface{}
+	sel   []pathSel
 	depth int
 	err   error
 }

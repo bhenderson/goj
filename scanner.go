@@ -29,6 +29,10 @@ func (p *Path) parse() error {
 	return p.err
 }
 
+func appendPathSel(p *Path, s pathSel) {
+	p.sel = append(p.sel, s)
+}
+
 // beginning state
 func stateKey(p *Path, str string) (f stateFunc, i int) {
 	data := []byte(str)
@@ -46,7 +50,7 @@ L:
 		case '=':
 			f = stateValue
 			if i == 0 {
-				p.sel = append(p.sel, "*")
+				appendPathSel(p, pathKey{"*"})
 			}
 			break L
 		case '[':
@@ -55,10 +59,14 @@ L:
 		case '.':
 			f = stateSep
 			break L
+		case '*':
+			if len(data) > i+1 && data[i+1] == '*' {
+				return stateRecursive, i
+			}
 		}
 	}
 	if i != 0 {
-		p.sel = append(p.sel, string(data[:i]))
+		appendPathSel(p, pathKey{string(data[:i])})
 	}
 	i++
 	return
@@ -66,19 +74,7 @@ L:
 
 // state after key=
 func stateValue(p *Path, data string) (f stateFunc, i int) {
-	var pair Pair
-	x := len(p.sel) - 1
-	pair.key = p.sel[x].(string)
-	p.sel[x] = pair
-
 	return stateValueNum, i
-}
-
-func setValue(p *Path, v interface{}) {
-	i := len(p.sel) - 1
-	pair := p.sel[i].(Pair)
-	pair.val = v
-	p.sel[i] = pair
 }
 
 // state after key= (try number)
@@ -90,7 +86,7 @@ func stateValueNum(p *Path, data string) (f stateFunc, i int) {
 	x, _ := fmt.Fscanf(r, "%f%s", &fl, &st)
 
 	if x > 0 {
-		setValue(p, fl)
+		appendPathSel(p, pathVal{fl})
 		i = len(data) - len(st)
 		if data[i] == '.' {
 			f = stateParent
@@ -120,7 +116,9 @@ L:
 	}
 
 	if i != 0 {
-		setValue(p, data[:i])
+		appendPathSel(p, pathVal{data[:i]})
+	} else {
+		appendPathSel(p, pathVal{nil})
 	}
 
 	i++
@@ -143,7 +141,7 @@ L:
 		f = addError(`invalid index`)
 		return
 	}
-	p.sel = append(p.sel, x)
+	appendPathSel(p, pathIndex{x})
 
 	f = stateArrayEnd
 	i++
@@ -177,6 +175,20 @@ func stateSep(p *Path, data string) (f stateFunc, i int) {
 
 // state after **
 func stateRecursive(p *Path, data string) (f stateFunc, i int) {
+	if len(data) > 1 && data[:2] == "**" {
+		appendPathSel(p, pathRec{})
+		i = i + 2
+	}
+
+	if len(data) > i {
+		if data[i] == '.' {
+			f = stateSep
+		} else {
+			f = addError("expected seperator character")
+		}
+		i++
+	}
+
 	return
 }
 
@@ -186,7 +198,7 @@ func stateParent(p *Path, data string) (f stateFunc, i int) {
 		f = addError(`expected ".."`)
 		return
 	}
-	p.sel = append(p.sel, "..")
+	appendPathSel(p, pathParent{})
 	i++
 	return stateKey, i
 }

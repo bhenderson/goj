@@ -6,40 +6,49 @@ import (
 )
 
 func TestPath_Compile(t *testing.T) {
-	exp, act, msg := helpPath(`store`, "store")
+	exp, act, msg := helpPath(`store`, pathKey{"store"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`.store`, "store")
+	exp, act, msg = helpPath(`.store`, pathKey{"store"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`store.books`, "store", "books")
+	exp, act, msg = helpPath(`store.books`, pathKey{"store"}, pathKey{"books"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a=b`, Pair{"a", "b"})
+	exp, act, msg = helpPath(`a=b`, pathKey{"a"}, pathVal{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=`, Pair{"*", nil})
+	exp, act, msg = helpPath(`=`, pathKey{"*"}, pathVal{nil})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a=b..c`, Pair{"a", "b"}, "..", "c")
+	exp, act, msg = helpPath(`a=b..c`, pathKey{"a"}, pathVal{"b"}, pathParent{}, pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=3.99..c`, Pair{"*", 3.99}, "..", "c")
+	exp, act, msg = helpPath(`=3.99..c`, pathKey{"*"}, pathVal{3.99}, pathParent{}, pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=3.9*..c`, Pair{"*", "3.9*"}, "..", "c")
+	// exp, act, msg = helpPath(`=3.9*..c`, Pair{"*", "3.9*"}, "..", "c")
+	// assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`a..b`, pathKey{"a"}, pathParent{}, pathKey{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a..b`, "a", "..", "b")
+	exp, act, msg = helpPath(`[0]`, pathIndex{0})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0]`, 0)
+	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{0}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0].price`, "books", 0, "price")
+	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{0}, pathParent{}, pathIndex{1}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0]..[1].price`, "books", 0, "..", 1, "price")
+	exp, act, msg = helpPath(`**`, pathRec{})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`**.price`, pathRec{}, pathKey{"price"})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`**..price`, pathRec{}, pathParent{}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
 	// exp, act, msg = helpPath(`[*]`, 0)
@@ -50,19 +59,19 @@ func TestPath_Compile(t *testing.T) {
 
 	return
 
-	exp, act, msg = helpPath(`[0:1]`, PairSlice{0, 1, 1})
-	assert.Equal(t, exp, act, msg)
+	// exp, act, msg = helpPath(`[0:1]`, PairSlice{0, 1, 1})
+	// assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[-1:]`, PairSlice{-1, nil, 1})
-	assert.Equal(t, exp, act, msg)
+	// exp, act, msg = helpPath(`[-1:]`, PairSlice{-1, nil, 1})
+	// assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0:10:2]`, PairSlice{0, 10, 2})
-	assert.Equal(t, exp, act, msg)
+	// exp, act, msg = helpPath(`[0:10:2]`, PairSlice{0, 10, 2})
+	// assert.Equal(t, exp, act, msg)
 
 	// books[] <- what does that mean?
 
-	exp, act, msg = helpPath(`[1,2,-1]`, []int{1, 2, -1})
-	assert.Equal(t, exp, act, msg)
+	// exp, act, msg = helpPath(`[1,2,-1]`, []int{1, 2, -1})
+	// assert.Equal(t, exp, act, msg)
 
 }
 
@@ -85,10 +94,13 @@ func TestPath_CompileErrors(t *testing.T) {
 	exp, act, msg = helpPathErr(`[0a]`, `invalid path at [0a invalid index`)
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPathErr(`**b`, `invalid path at **b expected seperator character`)
+	assert.Equal(t, exp, act, msg)
+
 }
 
 func TestPath_CompileEscapeChar(t *testing.T) {
-	exp, act, msg := helpPath(`store\.books`, "store.books")
+	exp, act, msg := helpPath(`store\.books`, pathKey{"store.books"})
 	assert.Equal(t, exp, act, msg)
 
 }
@@ -102,7 +114,7 @@ func helpPathErr(s, exp string) (e, a, m string) {
 	return exp, err.Error(), s
 }
 
-func helpPath(s string, exp ...interface{}) ([]interface{}, []interface{}, string) {
+func helpPath(s string, exp ...pathSel) ([]pathSel, []pathSel, string) {
 	p, e := NewPath(s)
 	if e != nil {
 		panic(e.Error())
