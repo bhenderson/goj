@@ -6,7 +6,6 @@ import (
 )
 
 func TestPath_FilterOn(t *testing.T) {
-	return
 	input := `{
 		"store": {
 			"bicycles": [

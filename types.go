@@ -11,14 +11,22 @@ func (p pathRec) Eval(v interface{}) bool {
 	return true
 }
 
+func (p pathRec) String() string {
+	return "**"
+}
+
 type pathParent struct{}
 
 func (p pathParent) Eval(v interface{}) bool {
 	return true
 }
 
+func (p pathParent) String() string {
+	return ".."
+}
+
 type pathKey struct {
-	key string
+	val string
 }
 
 func (p pathKey) Eval(v interface{}) bool {
