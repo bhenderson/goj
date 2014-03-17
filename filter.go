@@ -61,14 +61,13 @@ func filterVal(arr []pathSel, p *Path) {
 	var i, j int
 	var x, y pathSel
 	for ; i < len(p.sel) && j < len(arr); i++ {
-		// **
 		x = p.sel[i]
 		y = arr[j]
+
 		switch x.(type) {
 		case pathRec:
 			i++
 			x = p.sel[i]
-			// price
 			if !x.Equal(y) {
 				i = i - 2 // retry
 			}
