@@ -2,7 +2,12 @@ package goj
 
 import "log"
 
+type NullWriter int
+func (NullWriter) Write([]byte) (int, error) { return 0, nil }
+
 func (d *Decoder) FilterOn(s string) error {
+    log.SetOutput(new(NullWriter))
+
 	var arr []pathSel
 	p, err := NewPath(s)
 
