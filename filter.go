@@ -16,28 +16,28 @@ func (d *Decoder) FilterOn(s string) error {
 		return err
 	}
 
-	filterPath(d.v, arr, p.sel)
+	filterPath(d.v, arr, p)
 
 	return nil
 }
 
-func filterPath(v interface{}, arr, selector []pathSel) {
+func filterPath(v interface{}, arr []pathSel, p *Path) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
 			wrap("key  ", &arr, pathKey{key}, func() {
-				filterPath(val, arr, selector)
+				filterPath(val, arr, p)
 			})
 		}
 	case []interface{}:
 		for i := 0; i < len(x); i++ {
 			wrap("index", &arr, pathIndex{i}, func() {
-				filterPath(x[i], arr, selector)
+				filterPath(x[i], arr, p)
 			})
 		}
 	default:
 		wrap("value", &arr, pathVal{x}, func() {
-			filterVal(arr, selector)
+			filterVal(arr, p)
 		})
 	}
 }
@@ -57,6 +57,6 @@ func popState(arr *[]pathSel) {
 	*arr = (*arr)[:len(*arr)-1]
 }
 
-func filterVal(arr, selector []pathSel) bool {
+func filterVal(arr []pathSel, p *Path) bool {
 	return false // arr[len(arr)-2] == "price"
 }
