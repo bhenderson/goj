@@ -60,7 +60,7 @@ func popState(arr *[]pathSel) {
 func filterVal(arr []pathSel, p *Path) {
 	var i, j int
 	var x, y pathSel
-	for ; i < len(p.sel) && j < len(arr); i++ {
+	for ; i < len(p.sel) && j < len(arr); i, j = i+1, j+1 {
 		x = p.sel[i]
 		y = arr[j]
 
@@ -76,10 +76,23 @@ func filterVal(arr []pathSel, p *Path) {
 				return
 			}
 		}
-		j++
 	}
+
+	// was last compare true?
 	if !x.Equal(y) {
 		return
 	}
-	log.Println("aaaaa", arr)
+
+	// eval parent
+	if i < len(p.sel) {
+		x = p.sel[i]
+		if _, ok := x.(pathParent); ok {
+			j--
+			if _, ok = (arr[j]).(pathVal); ok {
+				j--
+			}
+		}
+	}
+
+	log.Println("aaaaa", j, arr[:j])
 }
