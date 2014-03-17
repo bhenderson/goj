@@ -25,7 +25,7 @@ func filterPath(v interface{}, arr, selector []pathSel) (interface{}, bool) {
 			} else {
 				x[key] = val
 			}
-			log.Println("aaaaaaaa", arr, selector)
+			log.Println("key  ", arr, selector)
 			arr = arr[:len(arr)-1]
 		}
 		if len(x) == 0 {
@@ -38,7 +38,7 @@ func filterPath(v interface{}, arr, selector []pathSel) (interface{}, bool) {
 				// delete i
 				x = append(x[:i], x[i+1:]...)
 			}
-			log.Println("bbbbbbbb", arr, selector)
+			log.Println("index", arr, selector)
 			arr = arr[:len(arr)-1]
 		}
 		if len(x) == 0 {
@@ -47,7 +47,7 @@ func filterPath(v interface{}, arr, selector []pathSel) (interface{}, bool) {
 		v = x
 	default:
 		arr = append(arr, pathVal{x})
-		log.Println("cccccccc", arr, selector)
+		log.Println("value", arr, selector)
 		unsetFilterValue(arr)
 		if !filterVal(arr, selector) {
 			return nil, false
