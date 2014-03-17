@@ -2,12 +2,12 @@ package goj
 
 // pathSel is an interface for each path component
 type pathSel interface {
-	Eval(v interface{}) bool
+	Equal(v pathSel) bool
 }
 
 type pathRec struct{}
 
-func (p pathRec) Eval(v interface{}) bool {
+func (p pathRec) Equal(v pathSel) bool {
 	return true
 }
 
@@ -17,7 +17,7 @@ func (p pathRec) String() string {
 
 type pathParent struct{}
 
-func (p pathParent) Eval(v interface{}) bool {
+func (p pathParent) Equal(v pathSel) bool {
 	return true
 }
 
@@ -29,22 +29,28 @@ type pathKey struct {
 	val string
 }
 
-func (p pathKey) Eval(v interface{}) bool {
-	return true
+func (p pathKey) Equal(v pathSel) bool {
+	if x, ok := v.(pathKey); ok {
+		return p.val == x.val
+	}
+	return false
 }
 
 type pathVal struct {
 	val interface{}
 }
 
-func (p pathVal) Eval(v interface{}) bool {
-	return true
+func (p pathVal) Equal(v pathSel) bool {
+	if x, ok := v.(pathVal); ok {
+		return p.val == x.val
+	}
+	return false
 }
 
 type pathIndex struct {
 	i int
 }
 
-func (p pathIndex) Eval(v interface{}) bool {
+func (p pathIndex) Equal(v pathSel) bool {
 	return true
 }

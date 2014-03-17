@@ -45,7 +45,7 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 func wrap(msg string, arr *[]pathSel, v pathSel, cb func()) {
 	pushState(arr, v)
 	cb()
-	log.Println(msg, arr)
+	// log.Println(msg, arr)
 	popState(arr)
 }
 
@@ -57,6 +57,36 @@ func popState(arr *[]pathSel) {
 	*arr = (*arr)[:len(*arr)-1]
 }
 
-func filterVal(arr []pathSel, p *Path) bool {
-	return false // arr[len(arr)-2] == "price"
+func filterVal(arr []pathSel, p *Path) {
+	var i, j int
+	var x, y pathSel
+	for ; i < len(p.sel) && j < len(arr); i++ {
+		// **
+		x = p.sel[i]
+		// if pathRec, skip next one
+		if _, ok := x.(pathRec); ok {
+			i++
+			x = p.sel[i]
+			// price
+			for ; j < len(arr); j++ {
+				y = arr[j]
+				if x.Equal(y) {
+					break
+				}
+			}
+			// didn't find it
+			if j >= len(arr) {
+				return
+			}
+			i++
+			j++
+			continue
+		}
+		y = arr[j]
+		if !x.Equal(y) {
+			return
+		}
+		j++
+	}
+	log.Println("aaaaa", arr)
 }
