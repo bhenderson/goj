@@ -63,30 +63,22 @@ func filterVal(arr []pathSel, p *Path) {
 	for ; i < len(p.sel) && j < len(arr); i++ {
 		// **
 		x = p.sel[i]
+		y = arr[j]
 		// if pathRec, skip next one
 		if _, ok := x.(pathRec); ok {
 			i++
 			x = p.sel[i]
 			// price
-			for ; j < len(arr); j++ {
-				y = arr[j]
-				if x.Equal(y) {
-					break
-				}
+			if !x.Equal(y) {
+				i = i - 2 // retry
 			}
-			// didn't find it
-			if j >= len(arr) {
-				return
-			}
-			i++
-			j++
-			continue
-		}
-		y = arr[j]
-		if !x.Equal(y) {
+		} else if !x.Equal(y) {
 			return
 		}
 		j++
+	}
+	if !x.Equal(y) {
+		return
 	}
 	log.Println("aaaaa", arr)
 }

@@ -79,7 +79,7 @@ func stateValue(p *Path, data string) (f stateFunc, i int) {
 
 // state after key= (try number)
 func stateValueNum(p *Path, data string) (f stateFunc, i int) {
-	var fl float32
+	var fl float64
 	var st string
 
 	r := strings.NewReader(data)

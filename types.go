@@ -1,5 +1,10 @@
 package goj
 
+import (
+	// "log"
+	"reflect"
+)
+
 // pathSel is an interface for each path component
 type pathSel interface {
 	Equal(v pathSel) bool
@@ -42,7 +47,9 @@ type pathVal struct {
 
 func (p pathVal) Equal(v pathSel) bool {
 	if x, ok := v.(pathVal); ok {
-		return p.val == x.val
+		b := reflect.DeepEqual(p.val, x.val)
+		// log.Println("ccccc", b, p.val, x.val)
+		return b
 	}
 	return false
 }
