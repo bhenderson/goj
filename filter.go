@@ -25,28 +25,28 @@ func filterPath(v interface{}, arr, selector []pathSel) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
-			pushState(&arr, pathKey{key})
-			filterPath(val, arr, selector)
-			log.Println("key  ", arr)
-			popState(&arr)
+			wrap("key  ", &arr, pathKey{key}, func() {
+				filterPath(val, arr, selector)
+			})
 		}
 	case []interface{}:
 		for i := 0; i < len(x); i++ {
-			pushState(&arr, pathIndex{i})
-			filterPath(x[i], arr, selector)
-			log.Println("index", arr)
-			popState(&arr)
+			wrap("index", &arr, pathIndex{i}, func() {
+				filterPath(x[i], arr, selector)
+			})
 		}
 	default:
-		pushState(&arr, pathVal{x})
-		filterVal(arr, selector)
-		log.Println("value", arr)
-		popState(&arr)
+		wrap("value", &arr, pathVal{x}, func() {
+			filterVal(arr, selector)
+		})
 	}
 }
 
-func filterVal(arr, selector []pathSel) bool {
-	return false // arr[len(arr)-2] == "price"
+func wrap(msg string, arr *[]pathSel, v pathSel, cb func()) {
+	pushState(arr, v)
+	cb()
+	log.Println(msg, arr)
+	popState(arr)
 }
 
 func pushState(arr *[]pathSel, v pathSel) {
@@ -55,4 +55,8 @@ func pushState(arr *[]pathSel, v pathSel) {
 
 func popState(arr *[]pathSel) {
 	*arr = (*arr)[:len(*arr)-1]
+}
+
+func filterVal(arr, selector []pathSel) bool {
+	return false // arr[len(arr)-2] == "price"
 }
