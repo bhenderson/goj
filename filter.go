@@ -16,28 +16,28 @@ func (d *Decoder) FilterOn(s string) error {
 		return err
 	}
 
-	filterPath(d.v, arr, p)
+	filterPath(d.v, arr, &p.sel)
 
 	return nil
 }
 
-func filterPath(v interface{}, arr []pathSel, p *Path) {
+func filterPath(v interface{}, arr []pathSel, sel *[]pathSel) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
 			wrap("key  ", &arr, pathKey{key}, func() {
-				filterPath(val, arr, p)
+				filterPath(val, arr, sel)
 			})
 		}
 	case []interface{}:
 		for i := 0; i < len(x); i++ {
 			wrap("index", &arr, pathIndex{i}, func() {
-				filterPath(x[i], arr, p)
+				filterPath(x[i], arr, sel)
 			})
 		}
 	default:
 		wrap("value", &arr, pathVal{x}, func() {
-			filterVal(arr, p)
+			filterVal(arr, sel)
 		})
 	}
 }
@@ -57,17 +57,17 @@ func popState(arr *[]pathSel) {
 	*arr = (*arr)[:len(*arr)-1]
 }
 
-func filterVal(arr []pathSel, p *Path) {
+func filterVal(arr []pathSel, sel *[]pathSel) {
 	var i, j int
 	var x, y pathSel
-	for ; i < len(p.sel) && j < len(arr); i, j = i+1, j+1 {
-		x = p.sel[i]
+	for ; i < len(*sel) && j < len(arr); i, j = i+1, j+1 {
+		x = (*sel)[i]
 		y = arr[j]
 
 		switch x.(type) {
 		case pathRec:
 			i++
-			x = p.sel[i]
+			x = (*sel)[i]
 			if !x.Equal(y) {
 				i = i - 2 // retry
 			}
@@ -84,8 +84,8 @@ func filterVal(arr []pathSel, p *Path) {
 	}
 
 	// eval parent
-	if i < len(p.sel) {
-		x = p.sel[i]
+	if i < len(*sel) {
+		x = (*sel)[i]
 		if _, ok := x.(pathParent); ok {
 			j--
 			if _, ok = (arr[j]).(pathVal); ok {
