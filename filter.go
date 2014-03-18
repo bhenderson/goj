@@ -16,49 +16,48 @@ func (d *Decoder) FilterOn(s string) error {
 		return err
 	}
 
-	filterPath(d.v, &arr, p)
+	filterPath(d.v, arr, p)
 
 	return nil
 }
 
-func filterPath(v interface{}, arrPtr *[]pathSel, p *Path) {
+func filterPath(v interface{}, arr []pathSel, p *Path) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
-			wrap("key  ", arrPtr, pathKey{key}, func() {
-				filterPath(val, arrPtr, p)
+			wrap("key  ", &arr, pathKey{key}, func() {
+				filterPath(val, arr, p)
 			})
 		}
 	case []interface{}:
 		for i := 0; i < len(x); i++ {
-			wrap("index", arrPtr, pathIndex{i}, func() {
-				filterPath(x[i], arrPtr, p)
+			wrap("index", &arr, pathIndex{i}, func() {
+				filterPath(x[i], arr, p)
 			})
 		}
 	default:
-		wrap("value", arrPtr, pathVal{x}, func() {
-			filterVal(arrPtr, p)
+		wrap("value", &arr, pathVal{x}, func() {
+			filterVal(arr, p)
 		})
 	}
 }
 
-func wrap(msg string, arrPtr *[]pathSel, v pathSel, cb func()) {
-	pushState(arrPtr, v)
+func wrap(msg string, arr *[]pathSel, v pathSel, cb func()) {
+	pushState(arr, v)
 	cb()
-	// log.Println(msg, arrPtr)
-	popState(arrPtr)
+	// log.Println(msg, arr)
+	popState(arr)
 }
 
-func pushState(arrPtr *[]pathSel, v pathSel) {
-	*arrPtr = append(*arrPtr, v)
+func pushState(arr *[]pathSel, v pathSel) {
+	*arr = append(*arr, v)
 }
 
-func popState(arrPtr *[]pathSel) {
-	*arrPtr = (*arrPtr)[:len(*arrPtr)-1]
+func popState(arr *[]pathSel) {
+	*arr = (*arr)[:len(*arr)-1]
 }
 
-func filterVal(arrPtr *[]pathSel, p *Path) {
-	arr := *arrPtr
+func filterVal(arr []pathSel, p *Path) {
 	var i, j int
 	var x, y pathSel
 
@@ -106,7 +105,7 @@ func filterVal(arrPtr *[]pathSel, p *Path) {
 		log.Println("ddddd", arr)
 		p2 := &Path{sel: p.sel[i:], v: v}
 		var arr2 []pathSel
-		filterPath(v, &arr2, p2)
+		filterPath(v, arr2, p2)
 		log.Println("eeeee", p2.res)
 		arr = append(arr, p2.res...)
 		log.Println("fffff", arr)
