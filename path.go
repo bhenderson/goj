@@ -1,14 +1,14 @@
 package goj
 
 type Path struct {
-	p     string
-	sel   []pathSel
-	depth int
-	err   error
+	p   string
+	sel []pathSel
+	err error
+	v   interface{}
 }
 
-func NewPath(s string) (*Path, error) {
-	p := &Path{p: s}
+func NewPath(s string, v interface{}) (*Path, error) {
+	p := &Path{p: s, v: v}
 	if err := p.parse(); err != nil {
 		return nil, err
 	}

@@ -55,7 +55,8 @@ func (p pathVal) Equal(v pathSel) bool {
 }
 
 type pathIndex struct {
-	i int
+	// need to store both int and string
+	val int
 }
 
 func (p pathIndex) Equal(v pathSel) bool {

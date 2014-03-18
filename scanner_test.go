@@ -106,7 +106,7 @@ func TestPath_CompileEscapeChar(t *testing.T) {
 }
 
 func helpPathErr(s, exp string) (e, a, m string) {
-	_, err := NewPath(s)
+	_, err := NewPath(s, nil)
 	if err == nil {
 		return exp, "no error occured", s
 	}
@@ -115,7 +115,7 @@ func helpPathErr(s, exp string) (e, a, m string) {
 }
 
 func helpPath(s string, exp ...pathSel) ([]pathSel, []pathSel, string) {
-	p, e := NewPath(s)
+	p, e := NewPath(s, nil)
 	if e != nil {
 		panic(e.Error())
 	}
