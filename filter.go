@@ -103,19 +103,22 @@ func filterVal(arrPtr *[]pathSel, p *Path) {
 	log.Println("bbbbb", v)
 
 	if i < len(p.sel) {
+		log.Println("ddddd", arr)
 		p2 := &Path{sel: p.sel[i:], v: v}
 		var arr2 []pathSel
 		filterPath(v, &arr2, p2)
-		log.Println("ddddd", arr)
+		log.Println("eeeee", p2.res)
+		arr = append(arr, p2.res...)
+		log.Println("fffff", arr)
 	} else {
-		arr = append(arr, pathVal{v})
 		log.Println("ccccc", arr)
+		p.res = arr
 	}
 }
 
 func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
-	arr := *arrPtr
-	for _, sel := range arr {
+	// TODO error checking
+	for _, sel := range *arrPtr {
 		switch x := v.(type) {
 		case map[string]interface{}:
 			v = x[(sel.(pathKey)).val]

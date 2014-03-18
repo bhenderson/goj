@@ -2,9 +2,10 @@ package goj
 
 type Path struct {
 	p   string
-	sel []pathSel
-	err error
 	v   interface{}
+	err error
+	sel []pathSel
+	res []pathSel
 }
 
 func NewPath(s string, v interface{}) (*Path, error) {
@@ -13,13 +14,4 @@ func NewPath(s string, v interface{}) (*Path, error) {
 		return nil, err
 	}
 	return p, nil
-}
-
-type Pair struct {
-	key string
-	val interface{}
-}
-
-type PairSlice struct {
-	b, e, s interface{}
 }
