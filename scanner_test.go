@@ -24,7 +24,7 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`a=b..c`, pathKey{"a"}, pathVal{"b"}, pathParent{}, pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=3.99..c`, pathKey{"*"}, pathVal{3.99}, pathParent{}, pathKey{"c"})
+	exp, act, msg = helpPath(`=3.99..c`, pathKey{"*"}, pathVal{"3.99"}, pathParent{}, pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
 	// exp, act, msg = helpPath(`=3.9*..c`, Pair{"*", "3.9*"}, "..", "c")
@@ -51,6 +51,11 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`**..price`, pathRec{}, pathParent{}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPath(`**.price=3.99`, pathRec{}, pathKey{"price"}, pathVal{"3.99"})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`**.price=3.99*`, pathRec{}, pathKey{"price"}, pathVal{"3.99*"})
+	assert.Equal(t, exp, act, msg)
 	// exp, act, msg = helpPath(`[*]`, 0)
 	// assert.Equal(t, exp, act, msg)
 

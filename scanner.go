@@ -74,32 +74,15 @@ L:
 
 // state after key=
 func stateValue(p *Path, data string) (f stateFunc, i int) {
-	return stateValueNum, i
-}
-
-// state after key= (try number)
-func stateValueNum(p *Path, data string) (f stateFunc, i int) {
 	var fl float64
-	var st string
 
 	r := strings.NewReader(data)
-	x, _ := fmt.Fscanf(r, "%f%s", &fl, &st)
+	x, _ := fmt.Fscan(r, &fl)
 
 	if x > 0 {
-		appendPathSel(p, pathVal{fl})
-		i = len(data) - len(st)
-		if data[i] == '.' {
-			f = stateParent
-		}
-	} else {
-		f = stateValueString
+		i = len(data) - r.Len()
 	}
 
-	return
-}
-
-// state after key=\D
-func stateValueString(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
