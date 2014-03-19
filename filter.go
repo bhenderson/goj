@@ -96,23 +96,18 @@ func filterVal(arr []pathSel, p *Path) {
 	}
 
 	arr = arr[:j]
-
-	log.Println("aaaaa", arr)
 	v := findPath(&arr, p.v)
-	log.Println("bbbbb", v)
 
-	if i < len(p.sel) {
-		log.Println("ddddd", arr)
+	if i >= len(p.sel) {
+		p.res = arr
+	} else {
 		p2 := &Path{sel: p.sel[i:], v: v}
 		var arr2 []pathSel
 		filterPath(v, arr2, p2)
-		log.Println("eeeee", p2.res)
 		arr = append(arr, p2.res...)
-		log.Println("fffff", arr)
-	} else {
-		log.Println("ccccc", arr)
-		p.res = arr
 	}
+
+	log.Println(arr)
 }
 
 func findPath(arrPtr *[]pathSel, v interface{}) interface{} {

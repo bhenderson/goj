@@ -48,7 +48,6 @@ type pathVal struct {
 func (p pathVal) Equal(v pathSel) bool {
 	if x, ok := v.(pathVal); ok {
 		b := reflect.DeepEqual(p.val, x.val)
-		// log.Println("ccccc", b, p.val, x.val)
 		return b
 	}
 	return false
