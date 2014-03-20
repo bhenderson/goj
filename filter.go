@@ -1,6 +1,9 @@
 package goj
 
-import "log"
+import (
+	"fmt"
+	"log"
+)
 
 type NullWriter int
 
@@ -36,7 +39,7 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 			})
 		}
 	default:
-		wrap("value", &arr, pathVal{x}, func() {
+		wrap("value", &arr, pathVal{fmt.Sprint(x)}, func() {
 			filterVal(arr, p)
 		})
 	}
@@ -100,6 +103,9 @@ func filterVal(arr []pathSel, p *Path) {
 
 	if i >= len(p.sel) {
 		p.res = arr
+		if p.p == "" {
+			return
+		}
 	} else {
 		p2 := &Path{sel: p.sel[i:], v: v}
 		var arr2 []pathSel
@@ -107,7 +113,7 @@ func filterVal(arr []pathSel, p *Path) {
 		arr = append(arr, p2.res...)
 	}
 
-	log.Println(arr)
+	buildPath(&arr, p)
 }
 
 func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
@@ -124,4 +130,24 @@ func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
 	}
 
 	return v
+}
+
+func buildPath(arrPtr *[]pathSel, p *Path) {
+	log.Println(*arrPtr, p.p)
+	v := p.v
+	var r interface{}
+	arr := *arrPtr
+	for i = 0; i < len(arr); i++ {
+		sel := arr[i]
+		var y interface{}
+		switch x := v.(type) {
+		case map[string]interface{}:
+			key := (sel.(pathKey)).val
+			v = x[(sel.(pathKey)).val]
+		case []interface{}:
+			v = x[(sel.(pathIndex)).val]
+		default:
+			v = x
+		}
+	}
 }

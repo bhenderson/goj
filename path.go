@@ -3,6 +3,7 @@ package goj
 type Path struct {
 	p   string
 	v   interface{}
+	r   interface{}
 	err error
 	sel []pathSel
 	res []pathSel

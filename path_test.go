@@ -41,7 +41,7 @@ func TestPath_FilterOn(t *testing.T) {
 
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
-	err := d2.FilterOn("**.price=3.99")
+	err := d2.FilterOn("**.price=3.99..color")
 
 	if err != nil {
 		t.Fatal(err)
