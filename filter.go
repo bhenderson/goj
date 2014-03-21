@@ -2,7 +2,7 @@ package goj
 
 import (
 	"fmt"
-	"log"
+	// "log"
 )
 
 type NullWriter int
@@ -113,7 +113,7 @@ func filterVal(arr []pathSel, p *Path) {
 		arr = append(arr, p2.res...)
 	}
 
-	buildPath(&arr, p)
+	buildPath(arr, p)
 }
 
 func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
@@ -130,24 +130,4 @@ func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
 	}
 
 	return v
-}
-
-func buildPath(arrPtr *[]pathSel, p *Path) {
-	log.Println(*arrPtr, p.p)
-	v := p.v
-	var r interface{}
-	arr := *arrPtr
-	for i = 0; i < len(arr); i++ {
-		sel := arr[i]
-		var y interface{}
-		switch x := v.(type) {
-		case map[string]interface{}:
-			key := (sel.(pathKey)).val
-			v = x[(sel.(pathKey)).val]
-		case []interface{}:
-			v = x[(sel.(pathIndex)).val]
-		default:
-			v = x
-		}
-	}
 }
