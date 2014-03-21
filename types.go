@@ -60,5 +60,9 @@ type pathIndex struct {
 }
 
 func (p pathIndex) Equal(v pathSel) bool {
-	return true
+	if x, ok := v.(pathIndex); ok {
+		b := reflect.DeepEqual(p.val, x.val)
+		return b
+	}
+	return false
 }
