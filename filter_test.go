@@ -5,27 +5,31 @@ import (
 	"testing"
 )
 
-func TestPath_FilterOn(t *testing.T) {
-	input := `{
-		"store": {
-			"bicycles": [
-				{
-					"color": "red",
-					"price": 3.99
-				},
-				{
-					"color": "blue",
-					"price": 2.99
-				}
-			],
-			"truck": {
-				"color": "yellow",
+var input = `{
+	"store": {
+		"bicycles": [
+			{
+				"color": "red",
 				"price": 3.99
+			},
+			{
+				"color": "blue",
+				"price": 2.99
 			}
+		],
+		"truck": {
+			"color": "yellow",
+			"price": 3.99
 		}
-	}`
+	}
+}`
 
-	exp := `{
+func TestPath_FilterOn(t *testing.T) {
+	var exp string
+	var err error
+	var d1, d2 *Decoder
+
+	exp = `{
 		"store": {
 			"bicycles": [
 				{
@@ -38,9 +42,10 @@ func TestPath_FilterOn(t *testing.T) {
 		}
 	}`
 
-	d1 := testDecoder(t, exp)
-	d2 := testDecoder(t, input)
-	err := d2.FilterOn("**.price=3.99..color")
+	// parent
+	d1 = testDecoder(t, exp)
+	d2 = testDecoder(t, input)
+	err = d2.FilterOn("**.price=3.99..color")
 
 	if err != nil {
 		t.Fatal(err)
@@ -57,6 +62,7 @@ func TestPath_FilterOn(t *testing.T) {
 
 	assert.Equal(t, nil, d2.v)
 
+	// recursive without value
 	exp = `{
 		"store": {
 			"bicycles": [
@@ -83,6 +89,7 @@ func TestPath_FilterOn(t *testing.T) {
 	t.Log(d1, d2)
 	assert.Equal(t, d1.v, d2.v)
 
+	// top level key
 	d1 = testDecoder(t, input)
 	d2 = testDecoder(t, input)
 	err = d2.FilterOn("store")
