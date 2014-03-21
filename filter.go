@@ -1,9 +1,6 @@
 package goj
 
-import (
-	"fmt"
-	// "log"
-)
+// import "log"
 
 type NullWriter int
 
@@ -20,6 +17,7 @@ func (d *Decoder) FilterOn(s string) error {
 	}
 
 	filterPath(d.v, arr, p)
+	d.v = cleanBuild(p.r)
 
 	return nil
 }
@@ -39,7 +37,7 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 			})
 		}
 	default:
-		wrap("value", &arr, pathVal{fmt.Sprint(x)}, func() {
+		wrap("value", &arr, pathVal{x}, func() {
 			filterVal(arr, p)
 		})
 	}
@@ -102,8 +100,15 @@ func filterVal(arr []pathSel, p *Path) {
 	v := findPath(&arr, p.v)
 
 	if i >= len(p.sel) {
-		p.res = arr
 		if p.p == "" {
+			if len(arr) > 0 {
+				last := arr[len(arr)-1]
+				if _, ok := last.(pathVal); !ok {
+					arr = append(arr, pathVal{v})
+				}
+			}
+			p.res = arr
+
 			return
 		}
 	} else {
@@ -113,7 +118,7 @@ func filterVal(arr []pathSel, p *Path) {
 		arr = append(arr, p2.res...)
 	}
 
-	buildPath(arr, p)
+	p.r = buildPath(arr, p.r)
 }
 
 func findPath(arrPtr *[]pathSel, v interface{}) interface{} {

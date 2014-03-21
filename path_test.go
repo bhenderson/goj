@@ -33,8 +33,7 @@ func TestPath_FilterOn(t *testing.T) {
 				}
 			],
 			"truck": {
-				"color": "yellow",
-				"price": 3.99
+				"color": "yellow"
 			}
 		}
 	}`

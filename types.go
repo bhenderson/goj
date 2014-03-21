@@ -2,6 +2,7 @@ package goj
 
 import (
 	// "log"
+	"fmt"
 	"reflect"
 )
 
@@ -47,7 +48,7 @@ type pathVal struct {
 
 func (p pathVal) Equal(v pathSel) bool {
 	if x, ok := v.(pathVal); ok {
-		b := reflect.DeepEqual(p.val, x.val)
+		b := reflect.DeepEqual(p.val, fmt.Sprint(x.val))
 		return b
 	}
 	return false
