@@ -10,9 +10,11 @@ import (
 
 func main() {
 	dec := goj.NewDecoder(os.Stdin)
+	f := filter()
+	log.Println(f)
 
 	for {
-		if err := dec.Decode(); err == io.EOF {
+		if err := dec.Decode(f); err == io.EOF {
 			break
 		} else if err != nil {
 			log.Fatal(err)
@@ -21,4 +23,11 @@ func main() {
 		fmt.Println(dec)
 	}
 
+}
+
+func filter() string {
+	if len(os.Args) > 1 {
+		return os.Args[1]
+	}
+	return ""
 }

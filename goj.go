@@ -20,8 +20,15 @@ type Decoder struct {
 	v   interface{}
 }
 
-func (d *Decoder) Decode() (err error) {
-	return d.dec.Decode(&d.v)
+func (d *Decoder) Decode(f string) (err error) {
+	err = d.dec.Decode(&d.v)
+	if err != nil {
+		return
+	}
+	if f != "" {
+		d.FilterOn(f)
+	}
+	return
 }
 
 func (d *Decoder) String() string {

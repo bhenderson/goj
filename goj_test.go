@@ -17,13 +17,13 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	exp := `{"a":"b"}`
 	assert.Equal(t, testDecoder(t, exp).v, dec.v)
 
-	if err := dec.Decode(); err != nil {
+	if err := dec.Decode(""); err != nil {
 		t.Fatal(err)
 	}
 	exp = `{"c":"d"}`
 	assert.Equal(t, testDecoder(t, exp).v, dec.v)
 
-	if err := dec.Decode(); err != io.EOF {
+	if err := dec.Decode(""); err != io.EOF {
 		t.Fatal("expected EOF, got", err)
 	}
 }
@@ -34,7 +34,7 @@ func testDecoder(t *testing.T, input string) *Decoder {
 	r := strings.NewReader(input)
 	dec := NewDecoder(r)
 
-	if err := dec.Decode(); err != nil {
+	if err := dec.Decode(""); err != nil {
 		t.Fatal(err)
 	}
 	return dec

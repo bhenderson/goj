@@ -25,7 +25,7 @@ func Test_Decode(t *testing.T) {
 	r := strings.NewReader(input)
 	dec := NewDecoder(r)
 
-	if err := dec.Decode(); err != nil {
+	if err := dec.Decode(""); err != nil {
 		t.Fatal(err)
 	}
 
