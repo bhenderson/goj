@@ -71,6 +71,16 @@ func TestPath_FilterOn(t *testing.T) {
 	// top level key
 	e, a = testFilterOn(t, input, input, "store")
 	assert.Equal(t, e, a)
+
+	// end with recursive
+	exp = `null`
+	e, a = testFilterOn(t, exp, input, "store.**")
+	assert.Equal(t, e, a)
+
+	// recursive with missing path
+	exp = `null`
+	e, a = testFilterOn(t, exp, input, "store.**.blah")
+	assert.Equal(t, e, a)
 }
 
 func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}) {

@@ -69,6 +69,9 @@ func filterVal(arr []pathSel, p *Path) {
 		switch x.(type) {
 		case pathRec:
 			i++
+			if i >= len(p.sel) {
+				return
+			}
 			x = p.sel[i]
 			if !x.Equal(y) {
 				i = i - 2 // retry
