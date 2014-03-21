@@ -100,13 +100,13 @@ func filterVal(arr []pathSel, p *Path) {
 	v := findPath(&arr, p.v)
 
 	if i >= len(p.sel) {
-		if p.p == "" {
-			if len(arr) > 0 {
-				last := arr[len(arr)-1]
-				if _, ok := last.(pathVal); !ok {
-					arr = append(arr, pathVal{v})
-				}
+		if len(arr) > 0 {
+			last := arr[len(arr)-1]
+			if _, ok := last.(pathVal); !ok {
+				arr = append(arr, pathVal{v})
 			}
+		}
+		if p.p == "" {
 			p.res = arr
 
 			return
