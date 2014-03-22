@@ -32,7 +32,7 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 		}
 	case []interface{}:
 		for i := 0; i < len(x); i++ {
-			wrap("index", &arr, pathIndex{i}, func() {
+			wrap("index", &arr, pathIdx{i}, func() {
 				filterPath(x[i], arr, p)
 			})
 		}
@@ -131,7 +131,7 @@ func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
 		case map[string]interface{}:
 			v = x[(sel.(pathKey)).val]
 		case []interface{}:
-			v = x[(sel.(pathIndex)).val]
+			v = x[(sel.(pathIdx)).val]
 		default:
 			v = x
 		}

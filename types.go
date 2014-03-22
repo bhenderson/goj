@@ -4,7 +4,6 @@ import (
 	// "log"
 	"fmt"
 	"path/filepath"
-	"reflect"
 )
 
 // pathSel is an interface for each path component
@@ -67,15 +66,27 @@ func (p pathVal) Equal(v pathSel) bool {
 	return ok && err == nil
 }
 
-type pathIndex struct {
-	// need to store both int and string
+// original index value of []interface{}
+type pathIdx struct {
 	val int
 }
 
+func (p pathIdx) Equal(v pathSel) bool {
+	return true
+}
+
+// jsonpath index value
+type pathIndex struct {
+	val string
+}
+
+// single value index
 func (p pathIndex) Equal(v pathSel) bool {
-	if x, ok := v.(pathIndex); ok {
-		b := reflect.DeepEqual(p.val, x.val)
-		return b
+	x, ok := v.(pathIdx)
+	if !ok {
+		return false
 	}
-	return false
+	rhs := p.val
+	lhs := fmt.Sprint(x.val)
+	return rhs == lhs
 }

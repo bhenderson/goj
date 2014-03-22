@@ -31,28 +31,28 @@ func Test_buildPath(t *testing.T) {
 	a1 := []pathSel{
 		pathKey{"store"},
 		pathKey{"bicycles"},
-		pathIndex{1},
+		pathIdx{1},
 		pathKey{"color"},
 		pathVal{"red"},
 	}
 	a2 := []pathSel{
 		pathKey{"store"},
 		pathKey{"bicycles"},
-		pathIndex{1},
+		pathIdx{1},
 		pathKey{"price"},
 		pathVal{3.99},
 	}
 	a3 := []pathSel{
 		pathKey{"store"},
 		pathKey{"bicycles"},
-		pathIndex{3},
+		pathIdx{3},
 		pathKey{"color"},
 		pathVal{"blue"},
 	}
 	a4 := []pathSel{
 		pathKey{"store"},
 		pathKey{"bicycles"},
-		pathIndex{3},
+		pathIdx{3},
 		pathKey{"price"},
 		pathVal{2.99},
 	}

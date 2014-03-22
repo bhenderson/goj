@@ -15,7 +15,7 @@ func buildPath(arr []pathSel, v interface{}) interface{} {
 		val := r[key]
 		r[key] = buildPath(arr[1:], val)
 		v = r
-	case pathIndex:
+	case pathIdx:
 		if v == nil {
 			v = make(map[int]interface{})
 		}

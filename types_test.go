@@ -49,3 +49,15 @@ func Test_pathVal_Equal(t *testing.T) {
 	p2 = pathVal{"4.99"}
 	assert.False(t, p2.Equal(p1))
 }
+
+func Test_pathIndex_Equal(t *testing.T) {
+	var p1, p2 pathSel
+
+	p1 = pathIdx{1}
+
+	p2 = pathIndex{"1"}
+	assert.True(t, p2.Equal(p1))
+
+	p2 = pathIndex{"0"}
+	assert.False(t, p2.Equal(p1))
+}

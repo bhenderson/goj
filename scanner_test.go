@@ -33,13 +33,13 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`a..b`, pathKey{"a"}, pathParent{}, pathKey{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0]`, pathIndex{0})
+	exp, act, msg = helpPath(`[0]`, pathIndex{"0"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{0}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{"0"}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{0}, pathParent{}, pathIndex{1}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{"0"}, pathParent{}, pathIndex{"1"}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPath(`**`, pathRec{})

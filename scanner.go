@@ -119,12 +119,12 @@ L:
 		}
 	}
 
-	x, e := strconv.Atoi(data[:i])
+	_, e := strconv.Atoi(data[:i])
 	if e != nil {
 		f = addError(`invalid index`)
 		return
 	}
-	appendPathSel(p, pathIndex{x})
+	appendPathSel(p, pathIndex{data[:i]})
 
 	f = stateArrayEnd
 	i++
