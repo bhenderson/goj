@@ -3,6 +3,7 @@ package goj
 import (
 	// "log"
 	"fmt"
+	"path/filepath"
 	"reflect"
 )
 
@@ -36,10 +37,15 @@ type pathKey struct {
 }
 
 func (p pathKey) Equal(v pathSel) bool {
-	if x, ok := v.(pathKey); ok {
-		return p.val == x.val
+	x, ok := v.(pathKey)
+	if !ok {
+		return false
 	}
-	return false
+	if p.val == x.val {
+		return true
+	}
+	ok, err := filepath.Match(p.val, x.val)
+	return ok && err == nil
 }
 
 type pathVal struct {
@@ -47,11 +53,18 @@ type pathVal struct {
 }
 
 func (p pathVal) Equal(v pathSel) bool {
-	if x, ok := v.(pathVal); ok {
-		b := reflect.DeepEqual(p.val, fmt.Sprint(x.val))
-		return b
+	x, ok := v.(pathVal)
+	if !ok {
+		return false
 	}
-	return false
+	// type assertion?
+	rhs := fmt.Sprint(p.val)
+	lhs := fmt.Sprint(x.val)
+	if rhs == lhs {
+		return true
+	}
+	ok, err := filepath.Match(rhs, lhs)
+	return ok && err == nil
 }
 
 type pathIndex struct {
