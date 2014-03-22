@@ -4,6 +4,7 @@ import (
 	// "log"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 // pathSel is an interface for each path component
@@ -69,6 +70,7 @@ func (p pathVal) Equal(v pathSel) bool {
 // original index value of []interface{}
 type pathIdx struct {
 	val int
+	len int
 }
 
 func (p pathIdx) Equal(v pathSel) bool {
@@ -89,4 +91,71 @@ func (p pathIndex) Equal(v pathSel) bool {
 	rhs := p.val
 	lhs := fmt.Sprint(x.val)
 	return rhs == lhs
+}
+
+type pathSlice struct {
+	b, e, s int
+}
+
+func (p pathSlice) Equal(v pathSel) bool {
+	x, ok := v.(pathIdx)
+	if !ok {
+		return false
+	}
+	lhs := x.val
+	t := x.len
+	b, e, s := p.b, p.e, p.s
+	if b < 0 {
+		b = b + t
+	}
+	if e < 0 {
+		e = e + t
+	}
+	if b > lhs || lhs > e {
+		return false
+	}
+	if s > 1 {
+		if (lhs-b)%s != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+// TODO combine with pathIndex
+func newPathSet(s string) pathSet {
+	p := pathSet{}
+
+	var i int
+
+	r := strings.NewReader(s)
+	f := "%d,"
+
+	for r.Len() > 0 {
+		n, _ := fmt.Fscanf(r, f, &i)
+		if n > 0 {
+			p.val = append(p.val, i)
+		}
+	}
+
+	return p
+}
+
+type pathSet struct {
+	val []int
+}
+
+func (p pathSet) Equal(v pathSel) bool {
+	x, ok := v.(pathIdx)
+	if !ok {
+		return false
+	}
+
+	for _, i := range p.val {
+		if i == x.val {
+			return true
+		}
+	}
+
+	return false
 }

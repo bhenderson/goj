@@ -31,8 +31,9 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 			})
 		}
 	case []interface{}:
-		for i := 0; i < len(x); i++ {
-			wrap("index", &arr, pathIdx{i}, func() {
+		l := len(x)
+		for i := 0; i < l; i++ {
+			wrap("index", &arr, pathIdx{i, l}, func() {
 				filterPath(x[i], arr, p)
 			})
 		}
