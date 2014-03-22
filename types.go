@@ -122,7 +122,7 @@ func (p pathSlice) Equal(v pathSel) bool {
 	return true
 }
 
-// TODO combine with pathIndex
+// TODO replace pathIndex
 func newPathSet(s string) pathSet {
 	p := pathSet{}
 
