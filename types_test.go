@@ -53,16 +53,20 @@ func Test_pathVal_Equal(t *testing.T) {
 func Test_pathIndex_Equal(t *testing.T) {
 	var p1, p2 pathSel
 
-	p1 = pathIdx{1, 1}
+	p1 = pathIdx{1, 10}
 
-	p2 = pathIndex{"1"}
+	p2 = pathIndex{[]int{1}}
 	assert.True(t, p2.Equal(p1))
 
-	assert.False(t, p2.Equal(pathIndex{"1"}))
+	assert.False(t, p2.Equal(pathIndex{[]int{1}}))
 
-	p2 = pathIndex{"0"}
+	p2 = pathIndex{[]int{0}}
 	assert.False(t, p2.Equal(p1))
 
+	p2 = pathIndex{[]int{0, 1}}
+	assert.True(t, p2.Equal(p1))
+	assert.True(t, p2.Equal(pathIdx{0, 10}))
+	assert.False(t, p2.Equal(pathIdx{3, 10}))
 }
 
 func Test_pathSlice_Equal(t *testing.T) {
@@ -75,7 +79,7 @@ func Test_pathSlice_Equal(t *testing.T) {
 	assert.True(t, p2.Equal(p1))
 	assert.False(t, p2.Equal(pathIdx{11, 12}))
 
-	assert.False(t, p2.Equal(pathIndex{"2"}))
+	assert.False(t, p2.Equal(pathIndex{[]int{2}}))
 
 	// [0:10:2]
 	p2 = pathSlice{0, 10, 2}
@@ -101,21 +105,47 @@ func Test_pathSlice_Equal(t *testing.T) {
 	assert.True(t, p2.Equal(p1))
 }
 
-func Test_newPathSet(t *testing.T) {
-	p := newPathSet("0,1,-1")
-	assert.Equal(t, []int{0, 1, -1}, p.val)
+func Test_newPathIndex(t *testing.T) {
+	sel := testNewPathIndex(t, "*")
+	assert.Equal(t, pathSlice{0, -1, 1}, sel)
 
-	p = newPathSet("0")
-	assert.Equal(t, []int{0}, p.val)
+	sel = testNewPathIndex(t, ":")
+	assert.Equal(t, pathSlice{0, -1, 1}, sel)
+
+	sel = testNewPathIndex(t, "::")
+	assert.Equal(t, pathSlice{0, -1, 1}, sel)
+
+	sel = testNewPathIndex(t, "0:1")
+	assert.Equal(t, pathSlice{0, 1, 1}, sel)
+
+	sel = testNewPathIndex(t, "1:")
+	assert.Equal(t, pathSlice{1, -1, 1}, sel)
+
+	sel = testNewPathIndex(t, ":2")
+	assert.Equal(t, pathSlice{0, 2, 1}, sel)
+
+	sel = testNewPathIndex(t, "0:-1:2")
+	assert.Equal(t, pathSlice{0, -1, 2}, sel)
+
+	sel = testNewPathIndex(t, "::2")
+	assert.Equal(t, pathSlice{0, -1, 2}, sel)
+
+	sel = testNewPathIndex(t, "0 : -1 :  2")
+	assert.Equal(t, pathSlice{0, -1, 2}, sel)
+
+	sel = testNewPathIndex(t, "0")
+	assert.Equal(t, pathIndex{[]int{0}}, sel)
+
+	sel = testNewPathIndex(t, "0,1,-3")
+	assert.Equal(t, pathIndex{[]int{0, 1, -3}}, sel)
 }
 
-func Test_pathSet_Equal(t *testing.T) {
-	var p1, p2 pathSel
+func testNewPathIndex(t *testing.T, s string) pathSel {
+	sel, err := newPathIndex(s)
 
-	p1 = pathIdx{1, 10}
+	if err != nil {
+		t.Fatal(s, err)
+	}
 
-	p2 = newPathSet("0,1")
-	assert.True(t, p2.Equal(p1))
-	assert.True(t, p2.Equal(pathIdx{0, 10}))
-	assert.False(t, p2.Equal(pathIdx{3, 10}))
+	return sel
 }

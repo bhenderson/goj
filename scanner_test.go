@@ -33,13 +33,13 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`a..b`, pathKey{"a"}, pathParent{}, pathKey{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0]`, pathIndex{"0"})
+	exp, act, msg = helpPath(`[0]`, pathIndex{[]int{0}})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{"0"}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{[]int{0}}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{"0"}, pathParent{}, pathIndex{"1"}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{[]int{0}}, pathParent{}, pathIndex{[]int{1}}, pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPath(`**`, pathRec{})
@@ -56,27 +56,21 @@ func TestPath_Compile(t *testing.T) {
 
 	exp, act, msg = helpPath(`**.price=3.99*`, pathRec{}, pathKey{"price"}, pathVal{"3.99*"})
 	assert.Equal(t, exp, act, msg)
-	// exp, act, msg = helpPath(`[*]`, 0)
-	// assert.Equal(t, exp, act, msg)
 
-	// exp, act, msg = helpPath(`[]`, 0)
-	// assert.Equal(t, exp, act, msg)
+	exp, act, msg = helpPath(`[*]`, pathSlice{0, -1, 1})
+	assert.Equal(t, exp, act, msg)
 
-	return
+	exp, act, msg = helpPath(`[0:1]`, pathSlice{0, 1, 1})
+	assert.Equal(t, exp, act, msg)
 
-	// exp, act, msg = helpPath(`[0:1]`, PairSlice{0, 1, 1})
-	// assert.Equal(t, exp, act, msg)
+	exp, act, msg = helpPath(`[-1:]`, pathSlice{-1, -1, 1})
+	assert.Equal(t, exp, act, msg)
 
-	// exp, act, msg = helpPath(`[-1:]`, PairSlice{-1, nil, 1})
-	// assert.Equal(t, exp, act, msg)
+	exp, act, msg = helpPath(`[0:10:2]`, pathSlice{0, 10, 2})
+	assert.Equal(t, exp, act, msg)
 
-	// exp, act, msg = helpPath(`[0:10:2]`, PairSlice{0, 10, 2})
-	// assert.Equal(t, exp, act, msg)
-
-	// books[] <- what does that mean?
-
-	// exp, act, msg = helpPath(`[1,2,-1]`, []int{1, 2, -1})
-	// assert.Equal(t, exp, act, msg)
+	exp, act, msg = helpPath(`[1,2,-1]`, pathIndex{[]int{1, 2, -1}})
+	assert.Equal(t, exp, act, msg)
 
 }
 

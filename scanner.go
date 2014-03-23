@@ -2,7 +2,6 @@ package goj
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -119,17 +118,15 @@ L:
 		}
 	}
 
-	_, e := strconv.Atoi(data[:i])
-	if e != nil {
-		f = addError(`invalid index`)
-		return
+	sel, err := newPathIndex(data[:i])
+
+	if err != nil {
+		return addError(err.Error()), i
 	}
-	appendPathSel(p, pathIndex{data[:i]})
 
-	f = stateArrayEnd
-	i++
+	appendPathSel(p, sel)
 
-	return
+	return stateArrayEnd, i + 1
 }
 
 // state after ]

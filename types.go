@@ -2,10 +2,13 @@ package goj
 
 import (
 	// "log"
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
 )
+
+var EOF = "EOF"
 
 // pathSel is an interface for each path component
 type pathSel interface {
@@ -79,18 +82,22 @@ func (p pathIdx) Equal(v pathSel) bool {
 
 // jsonpath index value
 type pathIndex struct {
-	val string
+	val []int
 }
 
-// single value index
 func (p pathIndex) Equal(v pathSel) bool {
 	x, ok := v.(pathIdx)
 	if !ok {
 		return false
 	}
-	rhs := p.val
-	lhs := fmt.Sprint(x.val)
-	return rhs == lhs
+
+	for _, i := range p.val {
+		if i == x.val {
+			return true
+		}
+	}
+
+	return false
 }
 
 type pathSlice struct {
@@ -122,10 +129,69 @@ func (p pathSlice) Equal(v pathSel) bool {
 	return true
 }
 
-// TODO replace pathIndex
-func newPathSet(s string) pathSet {
-	p := pathSet{}
+// common case of [*]
+var pathStar = pathSlice{0, -1, 1}
 
+func newPathIndex(s string) (pathSel, error) {
+	if len(s) == 0 {
+		return nil, errors.New("array index cannot be empty")
+	}
+
+	if s == "*" || s == ":" {
+		return pathStar, nil
+	}
+
+	sel, err := newPathSlice(s)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if sel != (pathSlice{}) {
+		return sel, nil
+	}
+
+	return nil, nil
+	// return newPathRange(s)
+}
+
+func newPathSlice(str string) (sel pathSlice, err error) {
+	var n, b, e, s int
+
+	r := strings.NewReader(str)
+
+	n, _ = fmt.Fscanf(r, "%d", &b)
+	if r.Len() == 0 {
+		return
+	}
+	r.Seek(0, 0)
+
+	n, er := fmt.Fscanf(r, "::%d", &s)
+	if er != nil && er.Error() == EOF {
+		n++
+	}
+	if n < 1 {
+		r.Seek(0, 0)
+		n, _ = fmt.Fscanf(r, ":%d:%d", &e, &s)
+	}
+	if n < 1 {
+		r.Seek(0, 0)
+		n, _ = fmt.Fscanf(r, "%d:%d:%d", &b, &e, &s)
+	}
+	if n > 0 {
+		if e == 0 {
+			e = -1
+		}
+		if s == 0 {
+			s = 1
+		}
+		sel = pathSlice{b, e, s}
+	}
+
+	return
+}
+
+func newPathRange(s string) (sel pathIndex, err error) {
 	var i int
 
 	r := strings.NewReader(s)
@@ -134,28 +200,9 @@ func newPathSet(s string) pathSet {
 	for r.Len() > 0 {
 		n, _ := fmt.Fscanf(r, f, &i)
 		if n > 0 {
-			p.val = append(p.val, i)
+			sel.val = append(sel.val, i)
 		}
 	}
 
-	return p
-}
-
-type pathSet struct {
-	val []int
-}
-
-func (p pathSet) Equal(v pathSel) bool {
-	x, ok := v.(pathIdx)
-	if !ok {
-		return false
-	}
-
-	for _, i := range p.val {
-		if i == x.val {
-			return true
-		}
-	}
-
-	return false
+	return
 }
