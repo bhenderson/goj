@@ -113,6 +113,7 @@ func (p pathSlice) Equal(v pathSel) bool {
 	lhs := x.val
 	t := x.len
 	b, e, s := p.b, p.e, p.s
+	// reverse index
 	if b < 0 {
 		b = b + t
 	}
@@ -122,10 +123,8 @@ func (p pathSlice) Equal(v pathSel) bool {
 	if b > lhs || lhs > e {
 		return false
 	}
-	if s > 1 {
-		if (lhs-b)%s != 0 {
-			return false
-		}
+	if s > 1 && (lhs-b)%s != 0 {
+		return false
 	}
 	return true
 }
@@ -143,6 +142,7 @@ func newPathIndex(s string) (sel pathSel, err error) {
 	}
 
 	r := strings.NewReader(s)
+
 	var ok bool
 	sel, ok = newPathSlice(r)
 
@@ -150,6 +150,7 @@ func newPathIndex(s string) (sel pathSel, err error) {
 		return
 	}
 
+	// rewind
 	r.Seek(0, 0)
 	sel, ok = newPathSet(r)
 
