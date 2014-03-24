@@ -143,6 +143,12 @@ func Test_newPathIndex_Errors(t *testing.T) {
 
 	msg = testNewPathIndexError(t, "0:a")
 	assert.Equal(t, "invalid array index", msg)
+
+	msg = testNewPathIndexError(t, "0:1:a")
+	assert.Equal(t, "invalid array index", msg)
+
+	msg = testNewPathIndexError(t, "0,a")
+	assert.Equal(t, "invalid array index", msg)
 }
 
 func testNewPathIndex(t *testing.T, s string) pathSel {

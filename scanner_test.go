@@ -90,7 +90,7 @@ func TestPath_CompileErrors(t *testing.T) {
 	exp, act, msg = helpPathErr(`store\`, `invalid path at store\ invalid escape character`)
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPathErr(`[0a]`, `invalid path at [0a invalid index`)
+	exp, act, msg = helpPathErr(`[0a]`, `invalid path at [0a invalid array index`)
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPathErr(`**b`, `invalid path at **b expected seperator character`)

@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-var EOF = "unexpected EOF"
+var EOF = "EOF"
+var UEOF = "unexpected EOF"
 
 // pathSel is an interface for each path component
 type pathSel interface {
@@ -163,16 +164,24 @@ func newPathIndex(s string) (sel pathSel, err error) {
 // does not handle whitespace
 func newPathSlice(r *strings.Reader) (sel pathSlice, ok bool) {
 	var b, e, s int
+	var c byte
 
 	fmt.Fscanf(r, "%d", &b)
-	_, err := fmt.Fscanf(r, ":")
-	if err != nil {
+	fmt.Fscanf(r, "%c", &c)
+	if c != ':' {
 		return sel, false
 	}
 	fmt.Fscanf(r, "%d", &e)
-	fmt.Fscanf(r, ":")
+	fmt.Fscanf(r, "%c", &c)
+	if c != ':' {
+		return sel, false
+	}
 	fmt.Fscanf(r, "%d", &s)
+	if r.Len() != 0 {
+		return sel, false
+	}
 
+	// defaults
 	if e == 0 {
 		e = -1
 	}
@@ -197,7 +206,7 @@ func newPathSet(r *strings.Reader) (sel pathIndex, ok bool) {
 			return pathIndex{}, false
 		}
 		_, e = fmt.Fscanf(r, c)
-		if e != nil && e.Error() != EOF {
+		if e != nil && e.Error() != UEOF {
 			return pathIndex{}, false
 		}
 		if n > 0 {
