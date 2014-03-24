@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var EOF = "EOF"
+var EOF = "unexpected EOF"
 
 // pathSel is an interface for each path component
 type pathSel interface {
@@ -132,73 +132,72 @@ func (p pathSlice) Equal(v pathSel) bool {
 // common case of [*]
 var pathStar = pathSlice{0, -1, 1}
 
-func newPathIndex(s string) (pathSel, error) {
+func newPathIndex(s string) (sel pathSel, err error) {
 	if len(s) == 0 {
 		return nil, errors.New("array index cannot be empty")
 	}
 
-	if s == "*" || s == ":" {
+	if s == "*" || s == ":" || s == "::" {
 		return pathStar, nil
 	}
 
-	sel, err := newPathSlice(s)
-
-	if err != nil {
-		return nil, err
-	}
+	r := strings.NewReader(s)
+	sel = newPathSlice(r)
 
 	if sel != (pathSlice{}) {
-		return sel, nil
-	}
-
-	return nil, nil
-	// return newPathRange(s)
-}
-
-func newPathSlice(str string) (sel pathSlice, err error) {
-	var n, b, e, s int
-
-	r := strings.NewReader(str)
-
-	n, _ = fmt.Fscanf(r, "%d", &b)
-	if r.Len() == 0 {
 		return
 	}
+
 	r.Seek(0, 0)
+	sel = newPathSet(r)
 
-	n, er := fmt.Fscanf(r, "::%d", &s)
-	if er != nil && er.Error() == EOF {
-		n++
-	}
-	if n < 1 {
-		r.Seek(0, 0)
-		n, _ = fmt.Fscanf(r, ":%d:%d", &e, &s)
-	}
-	if n < 1 {
-		r.Seek(0, 0)
-		n, _ = fmt.Fscanf(r, "%d:%d:%d", &b, &e, &s)
-	}
-	if n > 0 {
-		if e == 0 {
-			e = -1
-		}
-		if s == 0 {
-			s = 1
-		}
-		sel = pathSlice{b, e, s}
+	if len(sel.(pathIndex).val) != 0 {
+		return
 	}
 
-	return
+	return nil, errors.New("invalid array index")
 }
 
-func newPathRange(s string) (sel pathIndex, err error) {
-	var i int
+// scan reader for new slice
+// does not handle whitespace
+func newPathSlice(r *strings.Reader) (sel pathSlice) {
+	var b, e, s int
 
-	r := strings.NewReader(s)
-	f := "%d,"
+	fmt.Fscanf(r, "%d", &b)
+	_, err := fmt.Fscanf(r, ":")
+	if err != nil {
+		return
+	}
+	fmt.Fscanf(r, "%d", &e)
+	fmt.Fscanf(r, ":")
+	fmt.Fscanf(r, "%d", &s)
+
+	if e == 0 {
+		e = -1
+	}
+	if s == 0 {
+		s = 1
+	}
+
+	return pathSlice{b, e, s}
+}
+
+func newPathSet(r *strings.Reader) (sel pathIndex) {
+	var n, i int
+	var e error
+
+	d := "%d"
+	c := ","
 
 	for r.Len() > 0 {
-		n, _ := fmt.Fscanf(r, f, &i)
+		n, e = fmt.Fscanf(r, d, &i)
+		if n == 0 || e != nil {
+			return pathIndex{}
+		}
+		_, e = fmt.Fscanf(r, c)
+		if e != nil && e.Error() != EOF {
+			return pathIndex{}
+		}
 		if n > 0 {
 			sel.val = append(sel.val, i)
 		}

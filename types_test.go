@@ -130,14 +130,19 @@ func Test_newPathIndex(t *testing.T) {
 	sel = testNewPathIndex(t, "::2")
 	assert.Equal(t, pathSlice{0, -1, 2}, sel)
 
-	sel = testNewPathIndex(t, "0 : -1 :  2")
-	assert.Equal(t, pathSlice{0, -1, 2}, sel)
-
 	sel = testNewPathIndex(t, "0")
 	assert.Equal(t, pathIndex{[]int{0}}, sel)
 
 	sel = testNewPathIndex(t, "0,1,-3")
 	assert.Equal(t, pathIndex{[]int{0, 1, -3}}, sel)
+}
+
+func Test_newPathIndex_Errors(t *testing.T) {
+	msg := testNewPathIndexError(t, "a")
+	assert.Equal(t, "invalid array index", msg)
+
+	msg = testNewPathIndexError(t, "0:a")
+	assert.Equal(t, "invalid array index", msg)
 }
 
 func testNewPathIndex(t *testing.T, s string) pathSel {
@@ -148,4 +153,12 @@ func testNewPathIndex(t *testing.T, s string) pathSel {
 	}
 
 	return sel
+}
+
+func testNewPathIndexError(t *testing.T, s string) string {
+	sel, err := newPathIndex(s)
+	if err == nil {
+		t.Fatalf("%s %s %#v", s, "expected error, got", sel)
+	}
+	return err.Error()
 }
