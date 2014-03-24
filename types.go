@@ -142,16 +142,17 @@ func newPathIndex(s string) (sel pathSel, err error) {
 	}
 
 	r := strings.NewReader(s)
-	sel = newPathSlice(r)
+	var ok bool
+	sel, ok = newPathSlice(r)
 
-	if sel != (pathSlice{}) {
+	if ok {
 		return
 	}
 
 	r.Seek(0, 0)
-	sel = newPathSet(r)
+	sel, ok = newPathSet(r)
 
-	if len(sel.(pathIndex).val) != 0 {
+	if ok {
 		return
 	}
 
@@ -160,13 +161,13 @@ func newPathIndex(s string) (sel pathSel, err error) {
 
 // scan reader for new slice
 // does not handle whitespace
-func newPathSlice(r *strings.Reader) (sel pathSlice) {
+func newPathSlice(r *strings.Reader) (sel pathSlice, ok bool) {
 	var b, e, s int
 
 	fmt.Fscanf(r, "%d", &b)
 	_, err := fmt.Fscanf(r, ":")
 	if err != nil {
-		return
+		return sel, false
 	}
 	fmt.Fscanf(r, "%d", &e)
 	fmt.Fscanf(r, ":")
@@ -179,24 +180,25 @@ func newPathSlice(r *strings.Reader) (sel pathSlice) {
 		s = 1
 	}
 
-	return pathSlice{b, e, s}
+	return pathSlice{b, e, s}, true
 }
 
-func newPathSet(r *strings.Reader) (sel pathIndex) {
+func newPathSet(r *strings.Reader) (sel pathIndex, ok bool) {
 	var n, i int
 	var e error
 
 	d := "%d"
 	c := ","
+	ok = true
 
 	for r.Len() > 0 {
 		n, e = fmt.Fscanf(r, d, &i)
 		if n == 0 || e != nil {
-			return pathIndex{}
+			return pathIndex{}, false
 		}
 		_, e = fmt.Fscanf(r, c)
 		if e != nil && e.Error() != EOF {
-			return pathIndex{}
+			return pathIndex{}, false
 		}
 		if n > 0 {
 			sel.val = append(sel.val, i)
