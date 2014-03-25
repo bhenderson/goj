@@ -47,7 +47,7 @@ L:
 		case '=':
 			f = stateValue
 			if i == 0 {
-				appendPathSel(p, pathKey{"*"})
+				appendPathSel(p, &pathKey{"*"})
 			}
 			break L
 		case '[':
@@ -63,7 +63,7 @@ L:
 		}
 	}
 	if i != 0 {
-		appendPathSel(p, pathKey{string(data[:i])})
+		appendPathSel(p, &pathKey{string(data[:i])})
 	}
 	i++
 	return
@@ -96,9 +96,9 @@ L:
 	}
 
 	if i != 0 {
-		appendPathSel(p, pathVal{data[:i]})
+		appendPathSel(p, &pathVal{data[:i]})
 	} else {
-		appendPathSel(p, pathVal{nil})
+		appendPathSel(p, &pathVal{nil})
 	}
 
 	i++
@@ -154,7 +154,7 @@ func stateSep(p *Path, data string) (f stateFunc, i int) {
 // state after **
 func stateRecursive(p *Path, data string) (f stateFunc, i int) {
 	if len(data) > 1 && data[:2] == "**" {
-		appendPathSel(p, pathRec{})
+		appendPathSel(p, &pathRec{})
 		i = i + 2
 	}
 
@@ -176,7 +176,7 @@ func stateParent(p *Path, data string) (f stateFunc, i int) {
 		f = addError(`expected ".."`)
 		return
 	}
-	appendPathSel(p, pathParent{})
+	appendPathSel(p, &pathParent{})
 	i++
 	return stateKey, i
 }

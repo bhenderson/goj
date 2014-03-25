@@ -6,7 +6,7 @@ func buildPath(arr []pathSel, v interface{}) interface{} {
 	}
 
 	switch sel := arr[0].(type) {
-	case pathKey:
+	case *pathKey:
 		if v == nil {
 			v = make(map[string]interface{})
 		}
@@ -15,7 +15,7 @@ func buildPath(arr []pathSel, v interface{}) interface{} {
 		val := r[key]
 		r[key] = buildPath(arr[1:], val)
 		v = r
-	case pathIdx:
+	case *pathIdx:
 		if v == nil {
 			v = make(map[int]interface{})
 		}
@@ -24,7 +24,7 @@ func buildPath(arr []pathSel, v interface{}) interface{} {
 		val := r[key]
 		r[key] = buildPath(arr[1:], val)
 		v = r
-	case pathVal:
+	case *pathVal:
 		v = sel.val
 	}
 	return v

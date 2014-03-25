@@ -29,44 +29,44 @@ func Test_buildPath(t *testing.T) {
 
 	// index describes original index, not dest index.
 	a1 := []pathSel{
-		pathKey{"store"},
-		pathKey{"bicycles"},
-		pathIdx{1, 3},
-		pathKey{"color"},
-		pathVal{"red"},
+		&pathKey{"store"},
+		&pathKey{"bicycles"},
+		&pathIdx{1, 3},
+		&pathKey{"color"},
+		&pathVal{"red"},
 	}
 	a2 := []pathSel{
-		pathKey{"store"},
-		pathKey{"bicycles"},
-		pathIdx{1, 3},
-		pathKey{"price"},
-		pathVal{3.99},
+		&pathKey{"store"},
+		&pathKey{"bicycles"},
+		&pathIdx{1, 3},
+		&pathKey{"price"},
+		&pathVal{3.99},
 	}
 	a3 := []pathSel{
-		pathKey{"store"},
-		pathKey{"bicycles"},
-		pathIdx{3, 3},
-		pathKey{"color"},
-		pathVal{"blue"},
+		&pathKey{"store"},
+		&pathKey{"bicycles"},
+		&pathIdx{3, 3},
+		&pathKey{"color"},
+		&pathVal{"blue"},
 	}
 	a4 := []pathSel{
-		pathKey{"store"},
-		pathKey{"bicycles"},
-		pathIdx{3, 3},
-		pathKey{"price"},
-		pathVal{2.99},
+		&pathKey{"store"},
+		&pathKey{"bicycles"},
+		&pathIdx{3, 3},
+		&pathKey{"price"},
+		&pathVal{2.99},
 	}
 	a5 := []pathSel{
-		pathKey{"store"},
-		pathKey{"truck"},
-		pathKey{"color"},
-		pathVal{"yellow"},
+		&pathKey{"store"},
+		&pathKey{"truck"},
+		&pathKey{"color"},
+		&pathVal{"yellow"},
 	}
 	a6 := []pathSel{
-		pathKey{"store"},
-		pathKey{"truck"},
-		pathKey{"price"},
-		pathVal{3.99},
+		&pathKey{"store"},
+		&pathKey{"truck"},
+		&pathKey{"price"},
+		&pathVal{3.99},
 	}
 
 	var v interface{}

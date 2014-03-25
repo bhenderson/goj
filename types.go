@@ -18,21 +18,21 @@ type pathSel interface {
 
 type pathRec struct{}
 
-func (p pathRec) Equal(v pathSel) bool {
+func (p *pathRec) Equal(v pathSel) bool {
 	return true
 }
 
-func (p pathRec) String() string {
+func (p *pathRec) String() string {
 	return "**"
 }
 
 type pathParent struct{}
 
-func (p pathParent) Equal(v pathSel) bool {
+func (p *pathParent) Equal(v pathSel) bool {
 	return true
 }
 
-func (p pathParent) String() string {
+func (p *pathParent) String() string {
 	return ".."
 }
 
@@ -40,8 +40,8 @@ type pathKey struct {
 	val string
 }
 
-func (p pathKey) Equal(v pathSel) bool {
-	x, ok := v.(pathKey)
+func (p *pathKey) Equal(v pathSel) bool {
+	x, ok := v.(*pathKey)
 	if !ok {
 		return false
 	}
@@ -56,8 +56,8 @@ type pathVal struct {
 	val interface{}
 }
 
-func (p pathVal) Equal(v pathSel) bool {
-	x, ok := v.(pathVal)
+func (p *pathVal) Equal(v pathSel) bool {
+	x, ok := v.(*pathVal)
 	if !ok {
 		return false
 	}
@@ -77,7 +77,7 @@ type pathIdx struct {
 	len int
 }
 
-func (p pathIdx) Equal(v pathSel) bool {
+func (p *pathIdx) Equal(v pathSel) bool {
 	return true
 }
 
@@ -86,8 +86,8 @@ type pathIndex struct {
 	val []int
 }
 
-func (p pathIndex) Equal(v pathSel) bool {
-	x, ok := v.(pathIdx)
+func (p *pathIndex) Equal(v pathSel) bool {
+	x, ok := v.(*pathIdx)
 	if !ok {
 		return false
 	}
@@ -105,8 +105,8 @@ type pathSlice struct {
 	b, e, s int
 }
 
-func (p pathSlice) Equal(v pathSel) bool {
-	x, ok := v.(pathIdx)
+func (p *pathSlice) Equal(v pathSel) bool {
+	x, ok := v.(*pathIdx)
 	if !ok {
 		return false
 	}
@@ -130,7 +130,7 @@ func (p pathSlice) Equal(v pathSel) bool {
 }
 
 // common case of [*]
-var pathStar = pathSlice{0, -1, 1}
+var pathStar = &pathSlice{0, -1, 1}
 
 func newPathIndex(s string) (sel pathSel, err error) {
 	if len(s) == 0 {
@@ -163,7 +163,7 @@ func newPathIndex(s string) (sel pathSel, err error) {
 
 // scan reader for new slice
 // does not handle whitespace
-func newPathSlice(r *strings.Reader) (sel pathSlice, ok bool) {
+func newPathSlice(r *strings.Reader) (sel *pathSlice, ok bool) {
 	var b, e, s int
 	var c byte
 
@@ -190,30 +190,31 @@ func newPathSlice(r *strings.Reader) (sel pathSlice, ok bool) {
 		s = 1
 	}
 
-	return pathSlice{b, e, s}, true
+	return &pathSlice{b, e, s}, true
 }
 
-func newPathSet(r *strings.Reader) (sel pathIndex, ok bool) {
+func newPathSet(r *strings.Reader) (*pathIndex, bool) {
+	sel := &pathIndex{}
 	var n, i int
 	var e error
 
 	d := "%d"
 	c := ","
-	ok = true
+	ok := true
 
 	for r.Len() > 0 {
 		n, e = fmt.Fscanf(r, d, &i)
 		if n == 0 || e != nil {
-			return pathIndex{}, false
+			return &pathIndex{}, false
 		}
 		_, e = fmt.Fscanf(r, c)
 		if e != nil && e.Error() != UEOF {
-			return pathIndex{}, false
+			return &pathIndex{}, false
 		}
 		if n > 0 {
 			sel.val = append(sel.val, i)
 		}
 	}
 
-	return
+	return sel, ok
 }

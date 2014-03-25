@@ -6,70 +6,70 @@ import (
 )
 
 func TestPath_Compile(t *testing.T) {
-	exp, act, msg := helpPath(`store`, pathKey{"store"})
+	exp, act, msg := helpPath(`store`, &pathKey{"store"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`.store`, pathKey{"store"})
+	exp, act, msg = helpPath(`.store`, &pathKey{"store"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`store.books`, pathKey{"store"}, pathKey{"books"})
+	exp, act, msg = helpPath(`store.books`, &pathKey{"store"}, &pathKey{"books"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a=b`, pathKey{"a"}, pathVal{"b"})
+	exp, act, msg = helpPath(`a=b`, &pathKey{"a"}, &pathVal{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=`, pathKey{"*"}, pathVal{nil})
+	exp, act, msg = helpPath(`=`, &pathKey{"*"}, &pathVal{nil})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a=b..c`, pathKey{"a"}, pathVal{"b"}, pathParent{}, pathKey{"c"})
+	exp, act, msg = helpPath(`a=b..c`, &pathKey{"a"}, &pathVal{"b"}, &pathParent{}, &pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=3.99..c`, pathKey{"*"}, pathVal{"3.99"}, pathParent{}, pathKey{"c"})
+	exp, act, msg = helpPath(`=3.99..c`, &pathKey{"*"}, &pathVal{"3.99"}, &pathParent{}, &pathKey{"c"})
 	assert.Equal(t, exp, act, msg)
 
 	// exp, act, msg = helpPath(`=3.9*..c`, Pair{"*", "3.9*"}, "..", "c")
 	// assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`a..b`, pathKey{"a"}, pathParent{}, pathKey{"b"})
+	exp, act, msg = helpPath(`a..b`, &pathKey{"a"}, &pathParent{}, &pathKey{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0]`, pathIndex{[]int{0}})
+	exp, act, msg = helpPath(`[0]`, &pathIndex{[]int{0}})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0].price`, pathKey{"books"}, pathIndex{[]int{0}}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0].price`, &pathKey{"books"}, &pathIndex{[]int{0}}, &pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`books[0]..[1].price`, pathKey{"books"}, pathIndex{[]int{0}}, pathParent{}, pathIndex{[]int{1}}, pathKey{"price"})
+	exp, act, msg = helpPath(`books[0]..[1].price`, &pathKey{"books"}, &pathIndex{[]int{0}}, &pathParent{}, &pathIndex{[]int{1}}, &pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`**`, pathRec{})
+	exp, act, msg = helpPath(`**`, &pathRec{})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`**.price`, pathRec{}, pathKey{"price"})
+	exp, act, msg = helpPath(`**.price`, &pathRec{}, &pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`**..price`, pathRec{}, pathParent{}, pathKey{"price"})
+	exp, act, msg = helpPath(`**..price`, &pathRec{}, &pathParent{}, &pathKey{"price"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`**.price=3.99`, pathRec{}, pathKey{"price"}, pathVal{"3.99"})
+	exp, act, msg = helpPath(`**.price=3.99`, &pathRec{}, &pathKey{"price"}, &pathVal{"3.99"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`**.price=3.99*`, pathRec{}, pathKey{"price"}, pathVal{"3.99*"})
+	exp, act, msg = helpPath(`**.price=3.99*`, &pathRec{}, &pathKey{"price"}, &pathVal{"3.99*"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[*]`, pathSlice{0, -1, 1})
+	exp, act, msg = helpPath(`[*]`, &pathSlice{0, -1, 1})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0:1]`, pathSlice{0, 1, 1})
+	exp, act, msg = helpPath(`[0:1]`, &pathSlice{0, 1, 1})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[-1:]`, pathSlice{-1, -1, 1})
+	exp, act, msg = helpPath(`[-1:]`, &pathSlice{-1, -1, 1})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[0:10:2]`, pathSlice{0, 10, 2})
+	exp, act, msg = helpPath(`[0:10:2]`, &pathSlice{0, 10, 2})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`[1,2,-1]`, pathIndex{[]int{1, 2, -1}})
+	exp, act, msg = helpPath(`[1,2,-1]`, &pathIndex{[]int{1, 2, -1}})
 	assert.Equal(t, exp, act, msg)
 
 }
@@ -100,10 +100,10 @@ func TestPath_CompileErrors(t *testing.T) {
 
 func TestPath_CompileEscapeChar(t *testing.T) {
 	t.Skip("wait to reimplement scanner using a reader")
-	exp, act, msg := helpPath(`store\.books`, pathKey{"store.books"})
+	exp, act, msg := helpPath(`store\.books`, &pathKey{"store.books"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`stor\[e\][0]`, pathKey{"stor[e]"}, pathIndex{[]int{0}})
+	exp, act, msg = helpPath(`stor\[e\][0]`, &pathKey{"stor[e]"}, &pathIndex{[]int{0}})
 	assert.Equal(t, exp, act, msg)
 
 }

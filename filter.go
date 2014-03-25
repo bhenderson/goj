@@ -26,19 +26,19 @@ func filterPath(v interface{}, arr []pathSel, p *Path) {
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
-			wrap("key  ", &arr, pathKey{key}, func() {
+			wrap("key  ", &arr, &pathKey{key}, func() {
 				filterPath(val, arr, p)
 			})
 		}
 	case []interface{}:
 		l := len(x)
 		for i := 0; i < l; i++ {
-			wrap("index", &arr, pathIdx{i, l}, func() {
+			wrap("index", &arr, &pathIdx{i, l}, func() {
 				filterPath(x[i], arr, p)
 			})
 		}
 	default:
-		wrap("value", &arr, pathVal{x}, func() {
+		wrap("value", &arr, &pathVal{x}, func() {
 			filterVal(arr, p)
 		})
 	}
@@ -68,7 +68,7 @@ func filterVal(arr []pathSel, p *Path) {
 		y = arr[j]
 
 		switch x.(type) {
-		case pathRec:
+		case *pathRec:
 			i++
 			if i >= len(p.sel) {
 				return
@@ -92,9 +92,9 @@ func filterVal(arr []pathSel, p *Path) {
 	// eval parent
 	if i < len(p.sel) {
 		x = p.sel[i]
-		if _, ok := x.(pathParent); ok {
+		if _, ok := x.(*pathParent); ok {
 			i, j = i+1, j-1
-			if _, ok = (arr[j]).(pathVal); ok {
+			if _, ok = (arr[j]).(*pathVal); ok {
 				j--
 			}
 		}
@@ -106,8 +106,8 @@ func filterVal(arr []pathSel, p *Path) {
 	if i >= len(p.sel) {
 		if len(arr) > 0 {
 			last := arr[len(arr)-1]
-			if _, ok := last.(pathVal); !ok {
-				arr = append(arr, pathVal{v})
+			if _, ok := last.(*pathVal); !ok {
+				arr = append(arr, &pathVal{v})
 			}
 		}
 		if p.p == "" {
@@ -130,9 +130,9 @@ func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
 	for _, sel := range *arrPtr {
 		switch x := v.(type) {
 		case map[string]interface{}:
-			v = x[(sel.(pathKey)).val]
+			v = x[(sel.(*pathKey)).val]
 		case []interface{}:
-			v = x[(sel.(pathIdx)).val]
+			v = x[(sel.(*pathIdx)).val]
 		default:
 			v = x
 		}
