@@ -33,19 +33,17 @@ func appendPathSel(p *Path, s pathSel) {
 }
 
 // beginning state
-func stateKey(p *Path, str string) (f stateFunc, i int) {
-	data := []byte(str)
+func stateKey(p *Path, data string) (f stateFunc, i int) {
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
 		case '\\':
-			// escape char. skip next value
 			i++
+			// escape char. skip next value
 			if i >= len(data) {
 				f = stateEscape
 				return
 			}
-			data = append(data[:i-1], data[i:]...)
 		case '=':
 			f = stateValue
 			if i == 0 {
