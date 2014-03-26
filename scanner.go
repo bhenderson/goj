@@ -34,6 +34,7 @@ func appendPathSel(p *Path, s pathSel) {
 
 // beginning state
 func stateKey(p *Path, data string) (f stateFunc, i int) {
+	var escapes int
 L:
 	for ; i < len(data); i++ {
 		switch data[i] {
@@ -44,6 +45,9 @@ L:
 				f = stateEscape
 				return
 			}
+			data = data[:i-1] + data[i:]
+			i--
+			escapes++
 		case '=':
 			f = stateValue
 			if i == 0 {
@@ -65,7 +69,7 @@ L:
 	if i != 0 {
 		appendPathSel(p, &pathKey{string(data[:i])})
 	}
-	i++
+	i = i + 1 + escapes
 	return
 }
 

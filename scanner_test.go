@@ -99,8 +99,7 @@ func TestPath_CompileErrors(t *testing.T) {
 }
 
 func TestPath_CompileEscapeChar(t *testing.T) {
-	t.Skip("wait to reimplement scanner using a reader")
-	exp, act, msg := helpPath(`store\.books`, &pathKey{"store.books"})
+	exp, act, msg := helpPath(`store\.books.hard`, &pathKey{"store.books"}, &pathKey{"hard"})
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPath(`stor\[e\][0]`, &pathKey{"stor[e]"}, &pathIndex{[]int{0}})
