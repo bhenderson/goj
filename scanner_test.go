@@ -105,6 +105,9 @@ func TestPath_CompileEscapeChar(t *testing.T) {
 	exp, act, msg = helpPath(`stor\[e\][0]`, &pathKey{"stor[e]"}, &pathIndex{[]int{0}})
 	assert.Equal(t, exp, act, msg)
 
+	exp, act, msg = helpPath(`=hi\.mom..`, &pathKey{"*"}, &pathVal{"hi.mom"}, &pathParent{})
+	assert.Equal(t, exp, act, msg)
+
 }
 
 func helpPathErr(s, exp string) (e, a, m string) {

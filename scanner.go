@@ -76,6 +76,7 @@ L:
 // state after key=
 func stateValue(p *Path, data string) (f stateFunc, i int) {
 	var fl float64
+	var escapes int
 
 	r := strings.NewReader(data)
 	x, _ := fmt.Fscan(r, &fl)
@@ -93,6 +94,9 @@ L:
 				f = stateEscape
 				return
 			}
+			data = data[:i-1] + data[i:]
+			i--
+			escapes++
 		case '.':
 			f = stateParent
 			break L
@@ -105,7 +109,7 @@ L:
 		appendPathSel(p, &pathVal{nil})
 	}
 
-	i++
+	i = i + 1 + escapes
 
 	return
 }
