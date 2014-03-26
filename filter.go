@@ -12,6 +12,8 @@ func (d *Decoder) FilterOn(s string) error {
 	var arr []pathSel
 	p, err := NewPath(s, d.v)
 
+	// log.Println(p)
+
 	if err != nil {
 		return err
 	}
@@ -59,6 +61,20 @@ func popState(arr *[]pathSel) {
 	*arr = (*arr)[:len(*arr)-1]
 }
 
+func filterCompare(arr, sels []pathSel) bool {
+	if len(arr) > len(sels) {
+		return false
+	}
+
+	for i, val := range arr {
+		if !sels[i].Equal(val) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func filterVal(arr []pathSel, p *Path) {
 	var i, j int
 	var x, y pathSel
@@ -73,8 +89,7 @@ func filterVal(arr []pathSel, p *Path) {
 			if i >= len(p.sel) {
 				return
 			}
-			x = p.sel[i]
-			if !x.Equal(y) {
+			if !filterCompare(arr[j:], p.sel[i:]) {
 				i = i - 2 // retry
 			}
 		default:

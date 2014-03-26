@@ -1,5 +1,7 @@
 package goj
 
+import "fmt"
+
 type Path struct {
 	p   string
 	v   interface{}
@@ -15,4 +17,8 @@ func NewPath(s string, v interface{}) (*Path, error) {
 		return nil, err
 	}
 	return p, nil
+}
+
+func (p *Path) String() string {
+	return fmt.Sprintf("%V", p.sel)
 }
