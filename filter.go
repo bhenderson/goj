@@ -67,9 +67,9 @@ func filterVal(arr []pathSel, p *Path) {
 	p.r = buildPath(matchedPath, p.r)
 }
 
-func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
+func findPath(arr []pathSel, v interface{}) interface{} {
 	// TODO error checking
-	for _, sel := range *arrPtr {
+	for _, sel := range arr {
 		switch x := v.(type) {
 		case map[string]interface{}:
 			v = x[(sel.(*pathKey)).val]
@@ -84,13 +84,13 @@ func findPath(arrPtr *[]pathSel, v interface{}) interface{} {
 }
 
 func pathMatch(arr, sel []pathSel, p *Path) []pathSel {
-	for i, j := 0, 0; i < len(sel) && j < len(arr); i, j = i+1, j+1 {
-		x, y := sel[i], arr[j]
+	for i, j := 0, 0; i < len(sel); i, j = i+1, j+1 {
+		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
 		default:
-			if !x.Equal(y) {
+			if j >= len(arr) || !x.Equal(arr[j]) {
 				return []pathSel{}
 			}
 		}
