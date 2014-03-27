@@ -26,9 +26,9 @@ func (p *Path) String() string {
 func copyZero(v interface{}) interface{} {
 	switch v.(type) {
 	case map[string]interface{}:
-		return make(map[string]interface{})
+		return map[string]interface{}{}
 	case []interface{}:
-		return make([]interface{}, 0)
+		return []interface{}{}
 	}
 	return nil
 }
