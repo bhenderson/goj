@@ -25,7 +25,7 @@ var input = `{
 }`
 
 func TestPath_FilterOn(t *testing.T) {
-	var exp string
+	var exp, m string
 	var e, a interface{}
 
 	// parent
@@ -41,13 +41,13 @@ func TestPath_FilterOn(t *testing.T) {
 			}
 		}
 	}`
-	e, a = testFilterOn(t, exp, input, "**.price=3.99..color")
-	assert.Equal(t, e, a)
+	e, a, m = testFilterOn(t, exp, input, "**.price=3.99..color")
+	assert.Equal(t, e, a, m)
 
 	// wrong filter, returns nil
-	exp = `null`
-	e, a = testFilterOn(t, exp, input, "blah")
-	assert.Equal(t, e, a)
+	exp = `{}`
+	e, a, m = testFilterOn(t, exp, input, "blah")
+	assert.Equal(t, e, a, m)
 
 	// recursive without value
 	exp = `{
@@ -65,22 +65,22 @@ func TestPath_FilterOn(t *testing.T) {
 			}
 		}
 	}`
-	e, a = testFilterOn(t, exp, input, "store.**.color")
-	assert.Equal(t, e, a)
+	e, a, m = testFilterOn(t, exp, input, "store.**.color")
+	assert.Equal(t, e, a, m)
 
 	// top level key
-	e, a = testFilterOn(t, input, input, "store")
-	assert.Equal(t, e, a)
+	e, a, m = testFilterOn(t, input, input, "store")
+	assert.Equal(t, e, a, m)
 
 	// end with recursive
-	exp = `null`
-	e, a = testFilterOn(t, exp, input, "store.**")
-	assert.Equal(t, e, a)
+	exp = `{}`
+	e, a, m = testFilterOn(t, exp, input, "store.**")
+	assert.Equal(t, e, a, m)
 
 	// recursive with missing path
-	exp = `null`
-	e, a = testFilterOn(t, exp, input, "store.**.blah")
-	assert.Equal(t, e, a)
+	exp = `{}`
+	e, a, m = testFilterOn(t, exp, input, "store.**.blah")
+	assert.Equal(t, e, a, m)
 
 	// index
 	exp = `{
@@ -93,8 +93,8 @@ func TestPath_FilterOn(t *testing.T) {
 			]
 		}
 	}`
-	e, a = testFilterOn(t, exp, input, "store.bicycles[1]")
-	assert.Equal(t, e, a)
+	e, a, m = testFilterOn(t, exp, input, "store.bicycles[1]")
+	assert.Equal(t, e, a, m)
 
 	exp = `{
 		"store": {
@@ -108,11 +108,11 @@ func TestPath_FilterOn(t *testing.T) {
 			}
 		}
 	}`
-	e, a = testFilterOn(t, exp, input, "**.=3.99")
-	assert.Equal(t, e, a)
+	e, a, m = testFilterOn(t, exp, input, "**.=3.99")
+	assert.Equal(t, e, a, m)
 }
 
-func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}) {
+func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}, m string) {
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
 	err := d2.FilterOn(filter)
@@ -121,6 +121,6 @@ func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interfac
 		t.Fatal(err)
 	}
 
-	t.Log(d1, d2)
-	return d1.v, d2.v
+	// t.Log(d1, d2)
+	return d1.v, d2.v, filter
 }
