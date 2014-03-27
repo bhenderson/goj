@@ -64,7 +64,9 @@ func popState(arr *[]pathSel) {
 
 func filterVal(arr []pathSel, p *Path) {
 	matchedPath := filterMatched(arr, p.sel, p)
-	p.r = buildPath(matchedPath, p.r)
+	if len(matchedPath) > 0 {
+		p.r = buildPath(matchedPath, p.r)
+	}
 }
 
 func findPath(arr []pathSel, v interface{}) interface{} {
@@ -109,7 +111,7 @@ func filterParent(arr, sel []pathSel, p *Path) []pathSel {
 	arr = arr[:j]
 	v := findPath(arr, p.v)
 	if len(sel) > 0 {
-		p2 := &Path{sel: sel, v: v}
+		p2 := &Path{sel: sel, v: v, r: copyZero(v)}
 		filterPath(v, []pathSel{}, p2)
 		v = p2.r
 	}
