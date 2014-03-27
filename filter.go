@@ -84,6 +84,7 @@ func findPath(arr []pathSel, v interface{}) interface{} {
 }
 
 func filterMatched(arr, sel []pathSel, p *Path) []pathSel {
+L:
 	for i, j := 0, 0; i < len(sel) && j <= len(arr); i, j = i+1, j+1 {
 		x := sel[i]
 		switch x.(type) {
@@ -98,7 +99,8 @@ func filterMatched(arr, sel []pathSel, p *Path) []pathSel {
 			if i+1 < len(sel) {
 				p2 := &Path{sel: sel[i+1:], v: v}
 				filterPath(v, []pathSel{}, p2)
-				arr = append(arr, p2.res...)
+				arr = append(arr, &pathVal{p2.r})
+				break L
 			} else {
 				arr = append(arr, &pathVal{v})
 			}
