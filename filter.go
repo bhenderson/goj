@@ -90,19 +90,7 @@ L:
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
-			j--
-			if _, ok := arr[j].(*pathVal); ok {
-				j--
-			}
-			arr = arr[:j]
-			v := findPath(arr, p.v)
-			if i+1 < len(sel) {
-				p2 := &Path{sel: sel[i+1:], v: v}
-				filterPath(v, []pathSel{}, p2)
-				arr = append(arr, &pathVal{p2.r})
-			} else {
-				arr = append(arr, &pathVal{v})
-			}
+			arr = filterParent(arr[:j], sel[i+1:], p)
 			break L
 		default:
 			if j >= len(arr) || !x.Equal(arr[j]) {
@@ -110,5 +98,21 @@ L:
 			}
 		}
 	}
+	return arr
+}
+
+func filterParent(arr, sel []pathSel, p *Path) []pathSel {
+	j := len(arr) - 1
+	if _, ok := arr[j].(*pathVal); ok {
+		j--
+	}
+	arr = arr[:j]
+	v := findPath(arr, p.v)
+	if len(sel) > 0 {
+		p2 := &Path{sel: sel, v: v}
+		filterPath(v, []pathSel{}, p2)
+		v = p2.r
+	}
+	arr = append(arr, &pathVal{v})
 	return arr
 }
