@@ -111,8 +111,11 @@ func filterParent(arr, sel []pathSel, p *Path) []pathSel {
 	arr = arr[:j]
 	v := findPath(arr, p.v)
 	if len(sel) > 0 {
-		p2 := &Path{sel: sel, v: v, r: copyZero(v)}
+		p2 := &Path{sel: sel, v: v}
 		filterPath(v, []pathSel{}, p2)
+		if p2.r == nil {
+			return []pathSel{}
+		}
 		v = p2.r
 	}
 	arr = append(arr, &pathVal{v})

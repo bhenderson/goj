@@ -136,7 +136,7 @@ func TestPath_FilterOn(t *testing.T) {
 	e, a, m = testFilterOn(t, exp, input, "store.bicycles[0].price=3.99..color")
 	assert.Equal(t, e, a, m)
 
-	e, a, m = testFilterOn(t, `{}`, input, "store..blah")
+	e, a, m = testFilterOn(t, `{}`, input, "store.bicycles..blah")
 	assert.Equal(t, e, a, m)
 }
 
