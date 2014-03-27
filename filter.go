@@ -100,10 +100,10 @@ L:
 				p2 := &Path{sel: sel[i+1:], v: v}
 				filterPath(v, []pathSel{}, p2)
 				arr = append(arr, &pathVal{p2.r})
-				break L
 			} else {
 				arr = append(arr, &pathVal{v})
 			}
+			break L
 		default:
 			if j >= len(arr) || !x.Equal(arr[j]) {
 				return []pathSel{}
