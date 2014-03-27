@@ -63,7 +63,7 @@ func popState(arr *[]pathSel) {
 }
 
 func filterVal(arr []pathSel, p *Path) {
-	matchedPath := pathMatch(arr, p.sel, p)
+	matchedPath := filterMatched(arr, p.sel, p)
 	p.r = buildPath(matchedPath, p.r)
 }
 
@@ -83,12 +83,25 @@ func findPath(arr []pathSel, v interface{}) interface{} {
 	return v
 }
 
-func pathMatch(arr, sel []pathSel, p *Path) []pathSel {
-	for i, j := 0, 0; i < len(sel); i, j = i+1, j+1 {
+func filterMatched(arr, sel []pathSel, p *Path) []pathSel {
+	for i, j := 0, 0; i < len(sel) && j <= len(arr); i, j = i+1, j+1 {
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
+			j--
+			if _, ok := arr[j].(*pathVal); ok {
+				j--
+			}
+			arr = arr[:j]
+			v := findPath(arr, p.v)
+			if i+1 < len(sel) {
+				p2 := &Path{sel: sel[i+1:], v: v}
+				filterPath(v, []pathSel{}, p2)
+				arr = append(arr, p2.res...)
+			} else {
+				arr = append(arr, &pathVal{v})
+			}
 		default:
 			if j >= len(arr) || !x.Equal(arr[j]) {
 				return []pathSel{}
