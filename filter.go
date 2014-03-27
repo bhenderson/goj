@@ -1,6 +1,6 @@
 package goj
 
-// import "log"
+import "log"
 
 type NullWriter int
 
@@ -12,11 +12,11 @@ func (d *Decoder) FilterOn(s string) error {
 	var arr []pathSel
 	p, err := NewPath(s, d.v)
 
-	// log.Println(p)
-
 	if err != nil {
 		return err
 	}
+
+	log.Printf("%V", p.sel)
 
 	filterPath(d.v, arr, p)
 	d.v = cleanBuild(p.r)

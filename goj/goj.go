@@ -11,7 +11,6 @@ import (
 func main() {
 	dec := goj.NewDecoder(os.Stdin)
 	f := filter()
-	log.Println(f)
 
 	for {
 		if err := dec.Decode(f); err == io.EOF {

@@ -22,11 +22,8 @@ type Decoder struct {
 
 func (d *Decoder) Decode(f string) (err error) {
 	err = d.dec.Decode(&d.v)
-	if err != nil {
-		return
-	}
-	if f != "" {
-		d.FilterOn(f)
+	if err == nil && f != "" {
+		err = d.FilterOn(f)
 	}
 	return
 }
