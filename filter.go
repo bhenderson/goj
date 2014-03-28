@@ -1,6 +1,6 @@
 package goj
 
-import "log"
+// import "log"
 
 type NullWriter int
 
@@ -16,7 +16,7 @@ func (d *Decoder) FilterOn(s string) error {
 		return err
 	}
 
-	log.Printf("%V", p.sel)
+	// log.Printf("%V", p.sel)
 
 	filterPath(d.v, arr, p)
 	d.v = cleanBuild(p.r)
@@ -91,6 +91,16 @@ L:
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
+			i++
+			if i < len(sel) {
+				arr2 := filterMatched(arr[j:], sel[i:], p)
+				if len(arr2) > 0 {
+					arr = append(arr[:j], arr2...)
+					break L
+				} else {
+					i = i - 2
+				}
+			}
 		case *pathParent:
 			arr = filterParent(arr[:j], sel[i+1:], p)
 			break L
