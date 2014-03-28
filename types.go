@@ -129,8 +129,11 @@ func (p *pathSlice) Equal(v pathSel) bool {
 	return true
 }
 
+// common case of *
+var pathStar = &pathKey{"*"}
+
 // common case of [*]
-var pathStar = &pathSlice{0, -1, 1}
+var pathSliceAll = &pathSlice{0, -1, 1}
 
 func newPathIndex(s string) (sel pathSel, err error) {
 	if len(s) == 0 {
@@ -138,7 +141,7 @@ func newPathIndex(s string) (sel pathSel, err error) {
 	}
 
 	if s == "*" || s == ":" || s == "::" {
-		return pathStar, nil
+		return pathSliceAll, nil
 	}
 
 	r := strings.NewReader(s)
