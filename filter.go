@@ -9,7 +9,6 @@ func (NullWriter) Write([]byte) (int, error) { return 0, nil }
 func (d *Decoder) FilterOn(s string) error {
 	// log.SetOutput(new(NullWriter))
 
-	var arr []pathSel
 	p, err := NewPath(s, d.v)
 
 	if err != nil {
@@ -18,7 +17,7 @@ func (d *Decoder) FilterOn(s string) error {
 
 	// log.Printf("%V", p.sel)
 
-	filterPath(d.v, arr, p)
+	filterPath(d.v, []pathSel{}, p)
 	d.v = cleanBuild(p.r)
 
 	return nil
