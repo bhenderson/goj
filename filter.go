@@ -88,16 +88,6 @@ L:
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
-			i++
-			if i < len(sel) {
-				arr2 := filterMatched(arr[j:], sel[i:], p)
-				if len(arr2) > 0 {
-					arr = append(arr[:j], arr2...)
-					break L
-				} else {
-					i = i - 2
-				}
-			}
 		case *pathParent:
 			arr = filterParent(arr[:j], sel[i+1:], p)
 			break L
@@ -127,4 +117,21 @@ func filterParent(arr, sel []pathSel, p *Path) []pathSel {
 	}
 	arr = append(arr, &pathVal{v})
 	return arr
+}
+
+func filterRec(arr, sel []pathSel) bool {
+	// last element of arr is pathVal
+	var j int
+	for j, _ = range sel {
+		if _, ok := sel[j].(*pathVal); ok {
+			break
+		}
+	}
+	sel = sel[:j+1]
+
+	for i, y := range arr {
+		sel[i].Equal(y)
+	}
+
+	return true
 }

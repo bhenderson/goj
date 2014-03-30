@@ -140,6 +140,27 @@ func TestPath_FilterOn(t *testing.T) {
 	assert.Equal(t, e, a, m)
 }
 
+func Test_filterRec(t *testing.T) {
+	// arr := []pathSel{
+	// &pathKey{"store"},
+	// &pathKey{"bicycles"},
+	// &pathIdx{0, 1},
+	// &pathKey{"price"},
+	// &pathVal{3.99},
+	// }
+
+	// // **.=3.99..color
+	// sel := []pathSel{
+	// &pathRec{},
+	// pathStar,
+	// &pathVal{"3.99"},
+	// &pathParent{},
+	// &pathKey{"color"},
+	// }
+
+	// assert.True(t, filterRec(arr, sel[1:]))
+}
+
 func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}, m string) {
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
