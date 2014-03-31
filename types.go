@@ -69,12 +69,12 @@ func (p *pathVal) Equal(v pathSel) bool {
 		return false
 	}
 	// type assertion?
-	rhs := fmt.Sprint(p.val)
-	lhs := fmt.Sprint(x.val)
-	if rhs == lhs {
+	lhs := fmt.Sprint(p.val)
+	rhs := fmt.Sprint(x.val)
+	if lhs == rhs {
 		return true
 	}
-	ok, err := filepath.Match(rhs, lhs)
+	ok, err := filepath.Match(lhs, rhs)
 	return ok && err == nil
 }
 
