@@ -138,6 +138,21 @@ func TestPath_FilterOn(t *testing.T) {
 
 	e, a, m = testFilterOn(t, `{}`, input, "store.bicycles..blah")
 	assert.Equal(t, e, a, m)
+
+	exp = `{
+		"store": {
+			"bicycles": [
+				{
+					"color": "blue"
+				}
+			]
+		}
+	}`
+	e, a, m = testFilterOn(t, exp, input, "store.bicycles[0].color....[1].color")
+	assert.Equal(t, e, a, m)
+
+	e, a, m = testFilterOn(t, `{}`, input, "store.bicycles[0].color....[1].blah")
+	assert.Equal(t, e, a, m)
 }
 
 func Test_filterRec(t *testing.T) {

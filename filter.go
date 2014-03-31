@@ -83,14 +83,13 @@ func findPath(arr []pathSel, v interface{}) interface{} {
 }
 
 func filterMatched(arr, sel []pathSel, p *Path) []pathSel {
-L:
 	for i, j := 0, 0; i < len(sel) && j <= len(arr); i, j = i+1, j+1 {
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
 			arr = filterParent(arr[:j], sel[i+1:], p)
-			break L
+			return arr
 		default:
 			if j >= len(arr) || !x.Equal(arr[j]) {
 				return []pathSel{}
@@ -108,12 +107,18 @@ func filterParent(arr, sel []pathSel, p *Path) []pathSel {
 	arr = arr[:j]
 	v := findPath(arr, p.v)
 	if len(sel) > 0 {
-		p2 := &Path{sel: sel, v: v}
-		filterPath(v, []pathSel{}, p2)
+		sel2 := make([]pathSel, j)
+		for i := range sel2 {
+			sel2[i] = pathStar
+		}
+		sel2 = append(sel2, sel...)
+		p2 := &Path{sel: sel2, v: p.v}
+		filterPath(p.v, []pathSel{}, p2)
 		if p2.r == nil {
 			return []pathSel{}
 		}
-		v = p2.r
+		v = cleanBuild(p2.r)
+		v = findPath(arr, v)
 	}
 	arr = append(arr, &pathVal{v})
 	return arr

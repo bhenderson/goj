@@ -28,6 +28,8 @@ func Test_pathKey_Equal(t *testing.T) {
 
 	p2 = &pathKey{"blah"}
 	assert.False(t, p2.Equal(p1))
+
+	assert.True(t, pathStar.Equal(&pathIdx{0, 1}))
 }
 
 func Test_pathVal_Equal(t *testing.T) {

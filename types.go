@@ -41,14 +41,21 @@ type pathKey struct {
 }
 
 func (p *pathKey) Equal(v pathSel) bool {
+	var rhs string
 	x, ok := v.(*pathKey)
 	if !ok {
-		return false
+		y, ok := v.(*pathIdx)
+		if !ok {
+			return false
+		}
+		rhs = fmt.Sprint(y.val)
+	} else {
+		rhs = x.val
 	}
-	if p.val == x.val {
+	if p.val == rhs {
 		return true
 	}
-	ok, err := filepath.Match(p.val, x.val)
+	ok, err := filepath.Match(p.val, rhs)
 	return ok && err == nil
 }
 
