@@ -1,6 +1,6 @@
 package goj
 
-// import "log"
+import "log"
 
 type NullWriter int
 
@@ -114,11 +114,12 @@ func filterParent(arr, sel []pathSel, p *Path) []pathSel {
 		sel2 = append(sel2, sel...)
 		p2 := &Path{sel: sel2, v: p.v}
 		filterPath(p.v, []pathSel{}, p2)
-		if p2.r == nil {
-			return []pathSel{}
-		}
 		v = cleanBuild(p2.r)
 		v = findPath(arr, v)
+		if v == nil {
+			return []pathSel{}
+		}
+		log.Printf("%V", v)
 	}
 	arr = append(arr, &pathVal{v})
 	return arr
