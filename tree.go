@@ -25,6 +25,29 @@ func getBranch(n Node) (b Branch) {
 	}
 }
 
+func NewTree(v interface{}) Node {
+	return &Trunk{v}
+}
+
+// Trunk
+type Trunk struct {
+	child interface{}
+}
+
+func (n *Trunk) Parent() Node { return nil }
+
+func (n *Trunk) GetBranch() (b Branch) {
+	return Branch{}
+}
+
+func (n *Trunk) Traverse(cb nodeFunc) {
+	Traverse(n.child, n, cb)
+}
+
+func (n *Trunk) String() string {
+	return "trunk ->"
+}
+
 // NodeKey
 type NodeKey struct {
 	parent Node

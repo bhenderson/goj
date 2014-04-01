@@ -30,11 +30,12 @@ func TestTraverse(t *testing.T) {
 
 	d := testDecoder(t, input)
 
+	tree := NewTree(d.v)
+
 	var node Node
-	node = &NodeKey{child: d.v}
 
 	var i int
-	node.Traverse(func(n Node) {
+	tree.Traverse(func(n Node) {
 		i++
 		t.Log(n.GetBranch())
 		node = n
