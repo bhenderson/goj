@@ -53,14 +53,13 @@ func (n *LeafIdx) String() string        { return fmt.Sprint(n.val) }
 // LeafVal
 type LeafVal struct {
 	parent Leaf
-	child  interface{}
 	val    interface{}
 }
 
 func (n *LeafVal) Parent() Leaf          { return n.parent }
 func (n *LeafVal) GetBranch() (b Branch) { return getBranch(n) }
 func (n *LeafVal) Traverse(cb leafFunc)  { traverse(n, cb) }
-func (n *LeafVal) Child() interface{}    { return n.child }
+func (n *LeafVal) Child() interface{}    { return nil }
 func (n *LeafVal) String() string        { return fmt.Sprint(n.val) }
 
 func NewTree(v interface{}) Leaf {
