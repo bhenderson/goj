@@ -32,25 +32,25 @@ func TestTraverse(t *testing.T) {
 
 	tree := NewTree(d.v)
 
-	var node Node
+	var leaf Leaf
 
 	var i int
-	tree.Traverse(func(n Node) {
+	tree.Traverse(func(n Leaf) {
 		i++
 		t.Log(n.GetBranch())
-		node = n
+		leaf = n
 	})
 
 	t.Log("break")
 
-	node = node.Parent()
-	node = node.Parent()
-	node = node.Parent()
+	leaf = leaf.Parent()
+	leaf = leaf.Parent()
+	leaf = leaf.Parent()
 
-	node.Traverse(func(n Node) {
+	leaf.Traverse(func(n Leaf) {
 		i++
 		t.Log(n.GetBranch())
-		node = n
+		leaf = n
 	})
 
 	assert.Equal(t, 14, i)

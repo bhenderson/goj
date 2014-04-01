@@ -4,19 +4,73 @@ import (
 	"fmt"
 )
 
-type nodeFunc func(n Node)
+type leafFunc func(n Leaf)
 
-type Node interface {
-	Parent() Node
+type Leaf interface {
+	Parent() Leaf
 	GetBranch() Branch
-	Traverse(nodeFunc)
+	Traverse(leafFunc)
 	Child() interface{}
 	String() string
 }
 
-type Branch []Node
+type Branch []Leaf
 
-func getBranch(n Node) (b Branch) {
+// Trunk
+type Trunk struct {
+	child interface{}
+}
+
+func (n *Trunk) Parent() Leaf          { return nil }
+func (n *Trunk) GetBranch() (b Branch) { return Branch{} }
+func (n *Trunk) Traverse(cb leafFunc)  { traverse(n, cb) }
+func (n *Trunk) Child() interface{}    { return n.child }
+func (n *Trunk) String() string        { return "" }
+
+// LeafKey
+type LeafKey struct {
+	parent Leaf
+	child  interface{}
+	val    string
+}
+
+func (n *LeafKey) Parent() Leaf          { return n.parent }
+func (n *LeafKey) GetBranch() (b Branch) { return getBranch(n) }
+func (n *LeafKey) Traverse(cb leafFunc)  { traverse(n, cb) }
+func (n *LeafKey) Child() interface{}    { return n.child }
+func (n *LeafKey) String() string        { return n.val }
+
+// LeafIdx
+type LeafIdx struct {
+	parent   Leaf
+	child    interface{}
+	val, max int
+}
+
+func (n *LeafIdx) Parent() Leaf          { return n.parent }
+func (n *LeafIdx) GetBranch() (b Branch) { return getBranch(n) }
+func (n *LeafIdx) Traverse(cb leafFunc)  { traverse(n, cb) }
+func (n *LeafIdx) Child() interface{}    { return n.child }
+func (n *LeafIdx) String() string        { return fmt.Sprint(n.val) }
+
+// LeafVal
+type LeafVal struct {
+	parent Leaf
+	child  interface{}
+	val    interface{}
+}
+
+func (n *LeafVal) Parent() Leaf          { return n.parent }
+func (n *LeafVal) GetBranch() (b Branch) { return getBranch(n) }
+func (n *LeafVal) Traverse(cb leafFunc)  { traverse(n, cb) }
+func (n *LeafVal) Child() interface{}    { return n.child }
+func (n *LeafVal) String() string        { return fmt.Sprint(n.val) }
+
+func NewTree(v interface{}) Leaf {
+	return &Trunk{v}
+}
+
+func getBranch(n Leaf) (b Branch) {
 	if p := n.Parent(); p != nil {
 		b = p.GetBranch()
 		b = append(b, n)
@@ -26,90 +80,36 @@ func getBranch(n Node) (b Branch) {
 	}
 }
 
-func NewTree(v interface{}) Node {
-	return &Trunk{v}
-}
-
-// Trunk
-type Trunk struct {
-	child interface{}
-}
-
-func (n *Trunk) Parent() Node          { return nil }
-func (n *Trunk) GetBranch() (b Branch) { return Branch{} }
-func (n *Trunk) Traverse(cb nodeFunc)  { traverse(n, cb) }
-func (n *Trunk) Child() interface{}    { return n.child }
-func (n *Trunk) String() string        { return "" }
-
-// NodeKey
-type NodeKey struct {
-	parent Node
-	child  interface{}
-	val    string
-}
-
-func (n *NodeKey) Parent() Node          { return n.parent }
-func (n *NodeKey) GetBranch() (b Branch) { return getBranch(n) }
-func (n *NodeKey) Traverse(cb nodeFunc)  { traverse(n, cb) }
-func (n *NodeKey) Child() interface{}    { return n.child }
-func (n *NodeKey) String() string        { return n.val }
-
-// NodeIdx
-type NodeIdx struct {
-	parent   Node
-	child    interface{}
-	val, max int
-}
-
-func (n *NodeIdx) Parent() Node          { return n.parent }
-func (n *NodeIdx) GetBranch() (b Branch) { return getBranch(n) }
-func (n *NodeIdx) Traverse(cb nodeFunc)  { traverse(n, cb) }
-func (n *NodeIdx) Child() interface{}    { return n.child }
-func (n *NodeIdx) String() string        { return fmt.Sprint(n.val) }
-
-// NodeVal
-type NodeVal struct {
-	parent Node
-	child  interface{}
-	val    interface{}
-}
-
-func (n *NodeVal) Parent() Node          { return n.parent }
-func (n *NodeVal) GetBranch() (b Branch) { return getBranch(n) }
-func (n *NodeVal) Traverse(cb nodeFunc)  { traverse(n, cb) }
-func (n *NodeVal) Child() interface{}    { return n.child }
-func (n *NodeVal) String() string        { return fmt.Sprint(n.val) }
-
-func traverse(parent Node, cb nodeFunc) {
-	var node Node
+func traverse(parent Leaf, cb leafFunc) {
+	var leaf Leaf
 	v := parent.Child()
 
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {
-			node = &NodeKey{
+			leaf = &LeafKey{
 				parent: parent,
 				child:  val,
 				val:    key,
 			}
-			traverse(node, cb)
+			traverse(leaf, cb)
 		}
 	case []interface{}:
 		l := len(x)
 		for i, val := range x {
-			node = &NodeIdx{
+			leaf = &LeafIdx{
 				parent: parent,
 				child:  val,
 				val:    i,
 				max:    l,
 			}
-			traverse(node, cb)
+			traverse(leaf, cb)
 		}
 	default:
-		node = &NodeVal{
+		leaf = &LeafVal{
 			parent: parent,
 			val:    x,
 		}
-		cb(node)
+		cb(leaf)
 	}
 }
