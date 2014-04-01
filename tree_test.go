@@ -22,14 +22,19 @@ func TestTraverse(t *testing.T) {
 				"color": "yellow",
 				"price": 3.99
 			}
+		},
+		"grocers": {
+			"color": "black"
 		}
 	}`
 
 	d := testDecoder(t, input)
 
-	var i int
 	var node Node
-	Traverse(d.v, nil, func(n Node) {
+	node = &NodeKey{child: d.v}
+
+	var i int
+	node.Traverse(func(n Node) {
 		i++
 		t.Log(n.GetBranch())
 		node = n
@@ -39,6 +44,7 @@ func TestTraverse(t *testing.T) {
 
 	node = node.Parent()
 	node = node.Parent()
+	node = node.Parent()
 
 	node.Traverse(func(n Node) {
 		i++
@@ -46,5 +52,5 @@ func TestTraverse(t *testing.T) {
 		node = n
 	})
 
-	assert.Equal(t, 8, i)
+	assert.Equal(t, 14, i)
 }
