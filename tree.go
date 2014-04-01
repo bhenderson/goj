@@ -22,6 +22,7 @@ func getBranch(n Noder) (b Branch) {
 	}
 }
 
+// NodeKey
 type NodeKey struct {
 	parent Noder
 	child  interface{}
@@ -40,6 +41,7 @@ func (n *NodeKey) String() string {
 	return n.val
 }
 
+// NodeIdx
 type NodeIdx struct {
 	parent   Noder
 	child    interface{}
@@ -58,6 +60,7 @@ func (n *NodeIdx) String() string {
 	return fmt.Sprint(n.val)
 }
 
+// NodeVal
 type NodeVal struct {
 	parent Noder
 	child  interface{}
