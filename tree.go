@@ -4,15 +4,15 @@ import (
 	"fmt"
 )
 
-type Noder interface {
-	Parent() Noder
+type Node interface {
+	Parent() Node
 	GetBranch() Branch
 	String() string
 }
 
-type Branch []Noder
+type Branch []Node
 
-func getBranch(n Noder) (b Branch) {
+func getBranch(n Node) (b Branch) {
 	if p := n.Parent(); p != nil {
 		b = p.GetBranch()
 		b = append(b, n)
@@ -24,12 +24,12 @@ func getBranch(n Noder) (b Branch) {
 
 // NodeKey
 type NodeKey struct {
-	parent Noder
+	parent Node
 	child  interface{}
 	val    string
 }
 
-func (n *NodeKey) Parent() Noder {
+func (n *NodeKey) Parent() Node {
 	return n.parent
 }
 
@@ -43,12 +43,12 @@ func (n *NodeKey) String() string {
 
 // NodeIdx
 type NodeIdx struct {
-	parent   Noder
+	parent   Node
 	child    interface{}
 	val, max int
 }
 
-func (n *NodeIdx) Parent() Noder {
+func (n *NodeIdx) Parent() Node {
 	return n.parent
 }
 
@@ -62,12 +62,12 @@ func (n *NodeIdx) String() string {
 
 // NodeVal
 type NodeVal struct {
-	parent Noder
+	parent Node
 	child  interface{}
 	val    interface{}
 }
 
-func (n *NodeVal) Parent() Noder {
+func (n *NodeVal) Parent() Node {
 	return n.parent
 }
 
@@ -79,10 +79,10 @@ func (n *NodeVal) String() string {
 	return fmt.Sprint(n.val)
 }
 
-type nodeFunc func(n Noder)
+type nodeFunc func(n Node)
 
-func Traverse(v interface{}, parent Noder, cb nodeFunc) {
-	var node Noder
+func Traverse(v interface{}, parent Node, cb nodeFunc) {
+	var node Node
 	switch x := v.(type) {
 	case map[string]interface{}:
 		for key, val := range x {

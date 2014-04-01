@@ -28,7 +28,7 @@ func TestTraverse(t *testing.T) {
 	d := testDecoder(t, input)
 
 	var i int
-	Traverse(d.v, nil, func(n Noder) {
+	Traverse(d.v, nil, func(n Node) {
 		i++
 		t.Log(n.GetBranch())
 	})
