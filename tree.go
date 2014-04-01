@@ -1,17 +1,14 @@
 package goj
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type leafFunc func(n Leaf)
 
 type Leaf interface {
-	Parent() Leaf
-	GetBranch() Branch
-	Traverse(leafFunc)
 	Child() interface{}
-	String() string
+	GetBranch() Branch
+	Parent() Leaf
+	Traverse(leafFunc)
 }
 
 type Branch []Leaf
