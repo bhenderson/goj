@@ -41,11 +41,11 @@ func TestTraverse(t *testing.T) {
 		leaf = n
 	})
 
-	t.Log("break")
+	leaf = leaf.Parent()
+	leaf = leaf.Parent()
+	leaf = leaf.Parent()
 
-	leaf = leaf.Parent()
-	leaf = leaf.Parent()
-	leaf = leaf.Parent()
+	t.Log(leaf)
 
 	leaf.Traverse(func(n Leaf) {
 		i++

@@ -13,6 +13,8 @@ type Leaf interface {
 
 type Branch []Leaf
 
+const trunkStr = "trunk"
+
 // Trunk
 type Trunk struct {
 	child interface{}
@@ -22,7 +24,7 @@ func (n *Trunk) Parent() Leaf          { return nil }
 func (n *Trunk) GetBranch() (b Branch) { return Branch{} }
 func (n *Trunk) Traverse(cb leafFunc)  { traverse(n, cb) }
 func (n *Trunk) Child() interface{}    { return n.child }
-func (n *Trunk) String() string        { return "" }
+func (n *Trunk) String() string        { return trunkStr }
 
 // LeafKey
 type LeafKey struct {
