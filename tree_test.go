@@ -28,10 +28,23 @@ func TestTraverse(t *testing.T) {
 	d := testDecoder(t, input)
 
 	var i int
+	var node Node
 	Traverse(d.v, nil, func(n Node) {
 		i++
 		t.Log(n.GetBranch())
+		node = n
 	})
 
-	assert.Equal(t, 6, i)
+	t.Log("break")
+
+	node = node.Parent()
+	node = node.Parent()
+
+	node.Traverse(func(n Node) {
+		i++
+		t.Log(n.GetBranch())
+		node = n
+	})
+
+	assert.Equal(t, 8, i)
 }

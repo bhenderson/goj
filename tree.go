@@ -4,9 +4,12 @@ import (
 	"fmt"
 )
 
+type nodeFunc func(n Node)
+
 type Node interface {
 	Parent() Node
 	GetBranch() Branch
+	Traverse(nodeFunc)
 	String() string
 }
 
@@ -37,6 +40,10 @@ func (n *NodeKey) GetBranch() (b Branch) {
 	return getBranch(n)
 }
 
+func (n *NodeKey) Traverse(cb nodeFunc) {
+	Traverse(n.child, n, cb)
+}
+
 func (n *NodeKey) String() string {
 	return n.val
 }
@@ -54,6 +61,10 @@ func (n *NodeIdx) Parent() Node {
 
 func (n *NodeIdx) GetBranch() (b Branch) {
 	return getBranch(n)
+}
+
+func (n *NodeIdx) Traverse(cb nodeFunc) {
+	Traverse(n.child, n, cb)
 }
 
 func (n *NodeIdx) String() string {
@@ -75,11 +86,13 @@ func (n *NodeVal) GetBranch() (b Branch) {
 	return getBranch(n)
 }
 
+func (n *NodeVal) Traverse(cb nodeFunc) {
+	Traverse(n.child, n, cb)
+}
+
 func (n *NodeVal) String() string {
 	return fmt.Sprint(n.val)
 }
-
-type nodeFunc func(n Node)
 
 func Traverse(v interface{}, parent Node, cb nodeFunc) {
 	var node Node
