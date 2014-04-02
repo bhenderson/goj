@@ -14,19 +14,23 @@ func (d *Decoder) FilterOn(s string) error {
 	}
 
 	tree := NewTree(d.v)
-	tree.Branches(func(b Branch) {
-		filterVal(b, p)
-	})
+
+	cb := func(leaf *Leaf) {
+		leaf.Traverse(func(l *Leaf) {
+			p.r = buildBranch(l.GetBranch(), p.r)
+		})
+	}
+
+	filterBranches(tree, p.sel, cb)
+
 	d.v = cleanBuild(p.r)
 
 	return nil
 }
 
-func filterVal(b Branch, p *Path) {
-	filterBranch(b, p.sel, func(leaf *Leaf) {
-		leaf.Traverse(func(lf *Leaf) {
-			p.r = buildBranch(lf.GetBranch(), p.r)
-		})
+func filterBranches(leaf *Leaf, sel []pathSel, cb func(*Leaf)) {
+	leaf.Branches(func(b Branch) {
+		filterBranch(b, sel, cb)
 	})
 }
 
@@ -37,18 +41,16 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
-			var parent *Leaf
+			var leaf *Leaf
 			if j == len(b) {
 				j--
 			}
-			parent = b[j].Parent()
-			if parent.kind == leafVal {
-				parent = parent.Parent()
+			leaf = b[j].Parent()
+			if leaf.kind == leafVal {
+				leaf = leaf.Parent()
 			}
-			parent = parent.Parent()
-			parent.Branches(func(br Branch) {
-				filterBranch(br, sel[i+1:], cb)
-			})
+			leaf = leaf.Parent()
+			filterBranches(leaf, sel[i+1:], cb)
 			return
 		default:
 			if j >= len(b) || !x.Equal(b[j]) {
