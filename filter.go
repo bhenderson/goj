@@ -37,18 +37,18 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
-			if j > 0 {
+			var parent *Leaf
+			if j == len(b) {
 				j--
 			}
-			if b[j].kind == leafVal {
-				j--
+			parent = b[j].Parent()
+			if parent.kind == leafVal {
+				parent = parent.Parent()
 			}
-			parent := b[j].Parent()
-			if parent != nil {
-				parent.Branches(func(br Branch) {
-					filterBranch(br, sel[i+1:], cb)
-				})
-			}
+			parent = parent.Parent()
+			parent.Branches(func(br Branch) {
+				filterBranch(br, sel[i+1:], cb)
+			})
 			return
 		default:
 			if j >= len(b) || !x.Equal(b[j]) {
