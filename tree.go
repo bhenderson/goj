@@ -19,8 +19,12 @@ func (n *Leaf) Parent() *Leaf         { return n.parent }
 func (n *Leaf) GetBranch() (b Branch) { return getBranch(n) }
 func (n *Leaf) Traverse(cb leafFunc)  { traverse(n, cb) }
 func (n *Leaf) Child() interface{}    { return n.child }
+func (n *Leaf) isTrunk() bool {
+	return n.parent == nil && n.val == nil
+}
 func (n *Leaf) String() string {
-	if n.val == nil {
+	if n.isTrunk() {
+		// trunk
 		return trunkStr
 	}
 	return fmt.Sprint(n.val)
@@ -35,7 +39,7 @@ func getBranch(n *Leaf) (b Branch) {
 		b = p.GetBranch()
 		b = append(b, n)
 		return b
-	} else if n.val == nil {
+	} else if n.isTrunk() {
 		return Branch{}
 	} else {
 		return Branch{n}
