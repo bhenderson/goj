@@ -1,6 +1,6 @@
 package goj
 
-import "log"
+// import "log"
 
 type NullWriter int
 
@@ -17,53 +17,20 @@ func (d *Decoder) FilterOn(s string) error {
 
 	// log.Printf("%V", p.sel)
 
-	filterPath(d.v, []pathSel{}, p)
+	tree := NewTree(d.v)
+	tree.Branches(func(b Branch) {
+		filterVal(b, p)
+	})
 	d.v = cleanBuild(p.r)
 
 	return nil
 }
 
-func filterPath(v interface{}, arr []pathSel, p *Path) {
-	switch x := v.(type) {
-	case map[string]interface{}:
-		for key, val := range x {
-			wrap("key  ", &arr, &pathKey{key}, func() {
-				filterPath(val, arr, p)
-			})
-		}
-	case []interface{}:
-		l := len(x)
-		for i := 0; i < l; i++ {
-			wrap("index", &arr, &pathIdx{i, l}, func() {
-				filterPath(x[i], arr, p)
-			})
-		}
-	default:
-		wrap("value", &arr, &pathVal{x}, func() {
-			filterVal(arr, p)
-		})
+func filterVal(b Branch, p *Path) {
+	leaf := filterBranch(b, p.sel, p)
+	if leaf != nil {
+		p.r = buildBranch(leaf.GetBranch(), p.r)
 	}
-}
-
-// TODO don't need pointer here I think.
-func wrap(msg string, arr *[]pathSel, v pathSel, cb func()) {
-	pushState(arr, v)
-	cb()
-	// log.Println(msg, arr)
-	popState(arr)
-}
-
-func pushState(arr *[]pathSel, v pathSel) {
-	*arr = append(*arr, v)
-}
-
-func popState(arr *[]pathSel) {
-	*arr = (*arr)[:len(*arr)-1]
-}
-
-func filterVal(arr []pathSel, p *Path) {
-	matchedPath := filterMatched(arr, p.sel, p)
-	p.r = buildPath(matchedPath, p.r)
 }
 
 func findPath(arr []pathSel, v interface{}) interface{} {
@@ -82,62 +49,66 @@ func findPath(arr []pathSel, v interface{}) interface{} {
 	return v
 }
 
-func filterMatched(arr, sel []pathSel, p *Path) []pathSel {
-	for i, j := 0, 0; i < len(sel) && j <= len(arr); i, j = i+1, j+1 {
+func filterBranch(b Branch, sel []pathSel, p *Path) *Leaf {
+	var i, j int
+	for ; i < len(sel) && j <= len(b); i, j = i+1, j+1 {
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
 		case *pathParent:
-			arr = filterParent(arr[:j], sel[i+1:], p)
-			return arr
+			// b = filterParent(b[:j], sel[i+1:], p)
+			// return b[j]
 		default:
-			if j >= len(arr) || !x.Equal(arr[j]) {
-				return []pathSel{}
+			if j >= len(b) || !x.Equal(b[j]) {
+				return nil
 			}
 		}
 	}
-	return arr
+	if j == len(b) {
+		return nil
+	}
+	return b[j]
 }
 
-func filterParent(arr, sel []pathSel, p *Path) []pathSel {
-	j := len(arr) - 1
-	if _, ok := arr[j].(*pathVal); ok {
-		j--
-	}
-	arr = arr[:j]
-	v := findPath(arr, p.v)
-	if len(sel) > 0 {
-		sel2 := make([]pathSel, j)
-		for i := range sel2 {
-			sel2[i] = pathStar
-		}
-		sel2 = append(sel2, sel...)
-		p2 := &Path{sel: sel2, v: p.v}
-		filterPath(p.v, []pathSel{}, p2)
-		v = cleanBuild(p2.r)
-		v = findPath(arr, v)
-		if v == nil {
-			return []pathSel{}
-		}
-		log.Printf("%V", v)
-	}
-	arr = append(arr, &pathVal{v})
-	return arr
+func filterParent(b Branch, sel []pathSel, p *Path) Branch {
+	/* j := len(b) - 1
+	 * if b[j].kind == leafVal {
+	 *     j--
+	 * }
+	 * b = b[:j]
+	 * v := b[j-1].val
+	 * if len(sel) > 0 {
+	 *     sel2 := make([]pathSel, j)
+	 *     for i := range sel2 {
+	 *         sel2[i] = pathStar
+	 *     }
+	 *     sel2 = append(sel2, sel...)
+	 *     p2 := &Path{sel: sel2, v: p.v}
+	 *     // filterPath(p.v, []pathSel{}, p2)
+	 *     v = cleanBuild(p2.r)
+	 *     v = findPath(b, v)
+	 *     if v == nil {
+	 *         return []pathSel{}
+	 *     }
+	 *     log.Printf("%V", v)
+	 * }
+	 * b = append(b, &pathVal{v}) */
+	return b
 }
 
 func filterRec(arr, sel []pathSel) bool {
 	// last element of arr is pathVal
-	var j int
-	for j, _ = range sel {
-		if _, ok := sel[j].(*pathVal); ok {
-			break
-		}
-	}
-	sel = sel[:j+1]
-
-	for i, y := range arr {
-		sel[i].Equal(y)
-	}
+	/*     var j int
+	 *     for j, _ = range sel {
+	 *         if _, ok := sel[j].(*pathVal); ok {
+	 *             break
+	 *         }
+	 *     }
+	 *     sel = sel[:j+1]
+	 *
+	 *     for i, y := range arr {
+	 *         sel[i].Equal(y)
+	 *     } */
 
 	return true
 }

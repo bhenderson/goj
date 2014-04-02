@@ -6,105 +6,120 @@ import (
 )
 
 func Test_pathKey_Equal(t *testing.T) {
-	var p1, p2 pathSel
+	var p pathSel
+	var l *Leaf
 
-	p1 = &pathKey{"store"}
-	p2 = &pathKey{"store"}
-	assert.True(t, p2.Equal(p1))
+	l = &Leaf{val: "blah", kind: leafKey}
+	p = &pathKey{"store"}
 
-	assert.False(t, p2.Equal(&pathVal{"store"}))
+	assert.False(t, p.Equal(l))
 
-	p2 = &pathKey{"st*"}
-	assert.True(t, p2.Equal(p1))
+	l.val = "store"
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathKey{"st?re"}
-	assert.True(t, p2.Equal(p1))
+	p = &pathKey{"st*"}
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathKey{"st[aeiou]re"}
-	assert.True(t, p2.Equal(p1))
+	p = &pathKey{"st?re"}
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathKey{"st[^a-np-z]re"}
-	assert.True(t, p2.Equal(p1))
+	p = &pathKey{"st[aeiou]re"}
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathKey{"blah"}
-	assert.False(t, p2.Equal(p1))
+	p = &pathKey{"st[^a-np-z]re"}
+	assert.True(t, p.Equal(l))
 
-	assert.True(t, pathStar.Equal(&pathIdx{0, 1}))
+	l = &Leaf{val: 0, max: 1, kind: leafIdx}
+	assert.True(t, pathStar.Equal(l))
 }
 
 func Test_pathVal_Equal(t *testing.T) {
-	var p1, p2 pathSel
+	var p pathSel
+	var l *Leaf
 
-	p1 = &pathVal{3.99}
+	l = &Leaf{val: 3.99, kind: leafVal}
+	p = &pathVal{"3.99"}
 
-	p2 = &pathVal{"3.99"}
-	assert.True(t, p2.Equal(p1))
+	assert.True(t, p.Equal(l))
 
-	assert.False(t, p2.Equal(&pathKey{"3.99"}))
+	l.val = "3.99" // string
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathVal{"3*"}
-	assert.True(t, p2.Equal(p1))
+	p = &pathVal{"3*"}
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathVal{"3.[0-9]?"}
-	assert.True(t, p2.Equal(p1))
+	p = &pathVal{"3.[0-9]?"}
+	assert.True(t, p.Equal(l))
 
-	p2 = &pathVal{"4.99"}
-	assert.False(t, p2.Equal(p1))
+	p = &pathVal{"4.99"}
+	assert.False(t, p.Equal(l))
 }
 
 func Test_pathIndex_Equal(t *testing.T) {
-	var p1, p2 pathSel
+	var p pathSel
+	var l *Leaf
 
-	p1 = &pathIdx{1, 10}
+	l = &Leaf{val: 1, max: 10, kind: leafIdx}
+	p = &pathIndex{[]int{1}}
 
-	p2 = &pathIndex{[]int{1}}
-	assert.True(t, p2.Equal(p1))
+	assert.True(t, p.Equal(l))
 
-	assert.False(t, p2.Equal(&pathIndex{[]int{1}}))
+	l.kind = leafVal
+	assert.False(t, p.Equal(l))
+	l.kind = leafIdx
 
-	p2 = &pathIndex{[]int{0}}
-	assert.False(t, p2.Equal(p1))
+	p = &pathIndex{[]int{0}}
+	assert.False(t, p.Equal(l))
 
-	p2 = &pathIndex{[]int{0, 1}}
-	assert.True(t, p2.Equal(p1))
-	assert.True(t, p2.Equal(&pathIdx{0, 10}))
-	assert.False(t, p2.Equal(&pathIdx{3, 10}))
+	p = &pathIndex{[]int{0, 1}}
+	assert.True(t, p.Equal(l))
+	l.val = 0
+	assert.True(t, p.Equal(l))
+	l.val = 3
+	assert.False(t, p.Equal(l))
 }
 
 func Test_pathSlice_Equal(t *testing.T) {
-	var p1, p2 pathSel
+	var p pathSel
+	var l *Leaf
 
-	p1 = &pathIdx{2, 10}
-
+	l = &Leaf{val: 2, max: 10, kind: leafIdx}
 	// [0:10]
-	p2 = &pathSlice{0, 10, 1}
-	assert.True(t, p2.Equal(p1))
-	assert.False(t, p2.Equal(&pathIdx{11, 12}))
+	p = &pathSlice{0, 10, 1}
 
-	assert.False(t, p2.Equal(&pathIndex{[]int{2}}))
+	assert.True(t, p.Equal(l))
+	l.kind = leafVal
+	assert.False(t, p.Equal(l))
+	l.kind = leafIdx
 
 	// [0:10:2]
-	p2 = &pathSlice{0, 10, 2}
-	assert.True(t, p2.Equal(p1))
-	assert.False(t, p2.Equal(&pathIdx{3, 11}))
+	p = &pathSlice{0, 10, 2}
+	assert.True(t, p.Equal(l))
+	l.val = 3
+	assert.False(t, p.Equal(l))
 
 	// [1:11:2] -> 1,3,5...11
-	p2 = &pathSlice{1, 11, 2}
-	assert.True(t, p2.Equal(&pathIdx{3, 11}))
-	assert.False(t, p2.Equal(p1))
+	p = &pathSlice{1, 11, 2}
+	l.val = 11
+	assert.True(t, p.Equal(l))
+	l.val = 10
+	assert.False(t, p.Equal(l))
 
-	p2 = &pathSlice{5, 25, 5}
-	assert.True(t, p2.Equal(&pathIdx{15, 20}))
-	assert.False(t, p2.Equal(&pathIdx{9, 10}))
+	p = &pathSlice{5, 25, 5}
+	l.val, l.max = 15, 20
+	assert.True(t, p.Equal(l))
+	l.val, l.max = 9, 10
+	assert.False(t, p.Equal(l))
 
 	// [-1:] last
-	p2 = &pathSlice{-1, -1, 1}
-	assert.True(t, p2.Equal(&pathIdx{9, 10}))
-	assert.False(t, p2.Equal(p1))
+	p = &pathSlice{-1, -1, 1}
+	assert.True(t, p.Equal(l))
+	l.val = 8
+	assert.False(t, p.Equal(l))
 
 	// [:] all
-	p2 = &pathSlice{0, -1, 1}
-	assert.True(t, p2.Equal(p1))
+	p = &pathSlice{0, -1, 1}
+	assert.True(t, p.Equal(l))
 }
 
 func Test_newPathIndex(t *testing.T) {

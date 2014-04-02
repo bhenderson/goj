@@ -13,12 +13,12 @@ var UEOF = "unexpected EOF"
 
 // pathSel is an interface for each path component
 type pathSel interface {
-	Equal(v pathSel) bool
+	Equal(l *Leaf) bool
 }
 
 type pathRec struct{}
 
-func (p *pathRec) Equal(v pathSel) bool {
+func (p *pathRec) Equal(l *Leaf) bool {
 	return true
 }
 
@@ -28,7 +28,7 @@ func (p *pathRec) String() string {
 
 type pathParent struct{}
 
-func (p *pathParent) Equal(v pathSel) bool {
+func (p *pathParent) Equal(l *Leaf) bool {
 	return true
 }
 
@@ -40,17 +40,15 @@ type pathKey struct {
 	val string
 }
 
-func (p *pathKey) Equal(v pathSel) bool {
+func (p *pathKey) Equal(l *Leaf) bool {
 	var rhs string
-	x, ok := v.(*pathKey)
-	if !ok {
-		y, ok := v.(*pathIdx)
-		if !ok {
+	if l.kind != leafKey {
+		if l.kind != leafIdx {
 			return false
 		}
-		rhs = fmt.Sprint(y.val)
+		rhs = fmt.Sprint(l.val)
 	} else {
-		rhs = x.val
+		rhs = l.val.(string)
 	}
 	if p.val == rhs {
 		return true
@@ -63,14 +61,13 @@ type pathVal struct {
 	val interface{}
 }
 
-func (p *pathVal) Equal(v pathSel) bool {
-	x, ok := v.(*pathVal)
-	if !ok {
+func (p *pathVal) Equal(l *Leaf) bool {
+	if l.kind != leafVal {
 		return false
 	}
 	// type assertion?
 	lhs := fmt.Sprint(p.val)
-	rhs := fmt.Sprint(x.val)
+	rhs := fmt.Sprint(l.val)
 	if lhs == rhs {
 		return true
 	}
@@ -84,7 +81,7 @@ type pathIdx struct {
 	len int
 }
 
-func (p *pathIdx) Equal(v pathSel) bool {
+func (p *pathIdx) Equal(l *Leaf) bool {
 	return true
 }
 
@@ -93,14 +90,13 @@ type pathIndex struct {
 	val []int
 }
 
-func (p *pathIndex) Equal(v pathSel) bool {
-	x, ok := v.(*pathIdx)
-	if !ok {
+func (p *pathIndex) Equal(l *Leaf) bool {
+	if l.kind != leafIdx {
 		return false
 	}
 
 	for _, i := range p.val {
-		if i == x.val {
+		if i == l.val.(int) {
 			return true
 		}
 	}
@@ -112,13 +108,12 @@ type pathSlice struct {
 	b, e, s int
 }
 
-func (p *pathSlice) Equal(v pathSel) bool {
-	x, ok := v.(*pathIdx)
-	if !ok {
+func (p *pathSlice) Equal(l *Leaf) bool {
+	if l.kind != leafIdx {
 		return false
 	}
-	lhs := x.val
-	t := x.len
+	lhs := l.val.(int)
+	t := l.max
 	b, e, s := p.b, p.e, p.s
 	// reverse index
 	if b < 0 {

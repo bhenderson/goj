@@ -13,17 +13,22 @@ type Leaf struct {
 	child  interface{}
 	val    interface{}
 	max    int
+	kind   int
 }
+
+const (
+	leafTrk = iota
+	leafKey
+	leafIdx
+	leafVal
+)
 
 func (n *Leaf) Parent() *Leaf         { return n.parent }
 func (n *Leaf) GetBranch() (b Branch) { return getBranch(n) }
 func (n *Leaf) Traverse(cb leafFunc)  { traverse(n, cb) }
 func (n *Leaf) Child() interface{}    { return n.child }
-func (n *Leaf) isTrunk() bool {
-	return n.parent == nil && n.val == nil
-}
 func (n *Leaf) String() string {
-	if n.isTrunk() {
+	if n.kind == leafTrk {
 		// trunk
 		return trunkStr
 	}
@@ -39,7 +44,7 @@ func (l *Leaf) Branches(cb func(b Branch)) {
 }
 
 func NewTree(v interface{}) *Leaf {
-	return &Leaf{child: v}
+	return &Leaf{child: v, kind: leafTrk}
 }
 
 func getBranch(n *Leaf) (b Branch) {
@@ -47,7 +52,7 @@ func getBranch(n *Leaf) (b Branch) {
 		b = p.GetBranch()
 		b = append(b, n)
 		return b
-	} else if n.isTrunk() {
+	} else if n.kind == leafTrk {
 		return Branch{}
 	} else {
 		return Branch{n}
@@ -65,6 +70,7 @@ func traverse(parent *Leaf, cb leafFunc) {
 				parent: parent,
 				child:  val,
 				val:    key,
+				kind:   leafKey,
 			}
 			traverse(leaf, cb)
 		}
@@ -76,6 +82,7 @@ func traverse(parent *Leaf, cb leafFunc) {
 				child:  val,
 				val:    i,
 				max:    l,
+				kind:   leafIdx,
 			}
 			traverse(leaf, cb)
 		}
@@ -83,6 +90,7 @@ func traverse(parent *Leaf, cb leafFunc) {
 		leaf = &Leaf{
 			parent: parent,
 			val:    x,
+			kind:   leafVal,
 		}
 		cb(leaf)
 	}

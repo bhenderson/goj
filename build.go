@@ -1,31 +1,32 @@
 package goj
 
-func buildPath(arr []pathSel, v interface{}) interface{} {
-	if len(arr) < 1 {
+func buildBranch(b Branch, v interface{}) interface{} {
+	if len(b) < 1 {
 		return v
 	}
 
-	switch sel := arr[0].(type) {
-	case *pathKey:
+	leaf := b[0]
+	switch leaf.kind {
+	case leafKey:
 		if v == nil {
 			v = make(map[string]interface{})
 		}
 		r := v.(map[string]interface{})
-		key := sel.val
+		key := leaf.val.(string)
 		val := r[key]
-		r[key] = buildPath(arr[1:], val)
+		r[key] = buildBranch(b[1:], val)
 		v = r
-	case *pathIdx:
+	case leafIdx:
 		if v == nil {
 			v = make(map[int]interface{})
 		}
 		r := v.(map[int]interface{})
-		key := sel.val
+		key := leaf.val.(int)
 		val := r[key]
-		r[key] = buildPath(arr[1:], val)
+		r[key] = buildBranch(b[1:], val)
 		v = r
-	case *pathVal:
-		v = sel.val
+	case leafVal:
+		v = leaf.val
 	}
 	return v
 }
