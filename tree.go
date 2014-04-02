@@ -30,6 +30,14 @@ func (n *Leaf) String() string {
 	return fmt.Sprint(n.val)
 }
 
+// all branches downstream of this leaf
+func (l *Leaf) Branches(cb func(b Branch)) {
+	i := len(l.GetBranch())
+	l.Traverse(func(leaf *Leaf) {
+		cb(leaf.GetBranch()[i:])
+	})
+}
+
 func NewTree(v interface{}) *Leaf {
 	return &Leaf{child: v}
 }
