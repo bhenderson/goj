@@ -40,8 +40,15 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
-			// TODO return early if found
-			filterBranch(b[j:], sel[i+1:], cb)
+			// return early if found
+			var l *Leaf
+			filterBranch(b[j:], sel[i+1:], func(leaf *Leaf) {
+				l = leaf
+			})
+			if l != nil {
+				cb(l)
+				return
+			}
 			i--
 		case *pathParent:
 			// TODO why?
