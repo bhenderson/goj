@@ -95,10 +95,10 @@ func (p *pathIndex) Equal(l *Leaf) bool {
 		return false
 	}
 
+	rhs := l.val.(int)
 	t := l.max
-	var rhs int
+
 	for _, i := range p.val {
-		rhs = l.val.(int)
 		if i < 0 {
 			i = i + t
 		}
@@ -118,7 +118,7 @@ func (p *pathSlice) Equal(l *Leaf) bool {
 	if l.kind != leafIdx {
 		return false
 	}
-	lhs := l.val.(int)
+	rhs := l.val.(int)
 	t := l.max
 	b, e, s := p.b, p.e, p.s
 	// reverse index
@@ -128,10 +128,11 @@ func (p *pathSlice) Equal(l *Leaf) bool {
 	if e < 0 {
 		e = e + t
 	}
-	if b > lhs || lhs > e {
+	if b > rhs || rhs > e {
 		return false
 	}
-	if s > 1 && (lhs-b)%s != 0 {
+	// step
+	if s > 1 && (rhs-b)%s != 0 {
 		return false
 	}
 	return true
