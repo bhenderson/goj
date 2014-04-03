@@ -52,6 +52,16 @@ func TestPath_FilterOn(t *testing.T) {
 	e, a, m = testFilterOn(t, exp, input, "store.bicycles[1]")
 	assert.Equal(t, e, a, m)
 
+	exp = `{
+		"store": {
+			"truck": {
+				"color": "yellow"
+			}
+		}
+	}`
+	e, a, m = testFilterOn(t, exp, input, "store.truck.color=yellow")
+	assert.Equal(t, e, a, m)
+
 	// end with recursive
 	e, a, m = testFilterOn(t, input, input, "store.**")
 	assert.Equal(t, e, a, m)

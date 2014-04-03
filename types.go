@@ -1,9 +1,9 @@
 package goj
 
 import (
-	// "log"
 	"errors"
 	"fmt"
+	// "log"
 	"path/filepath"
 	"strings"
 )

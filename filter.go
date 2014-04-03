@@ -40,6 +40,8 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 		x := sel[i]
 		switch x.(type) {
 		case *pathRec:
+			filterBranch(b[j:], sel[i+1:], cb)
+			i--
 		case *pathParent:
 			// TODO why?
 			if j == len(b) {
@@ -53,8 +55,15 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 			}
 		}
 	}
-	if j >= len(b) {
+	// log.Print(b, sel, j, i)
+	if j > len(b) {
 		return
+	}
+	if len(b) == 0 {
+		return
+	}
+	if j == len(b) {
+		j--
 	}
 	cb(b[j])
 }
