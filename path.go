@@ -8,7 +8,6 @@ type Path struct {
 	r   interface{}
 	err error
 	sel []pathSel
-	res []pathSel
 }
 
 func NewPath(s string, v interface{}) (*Path, error) {
