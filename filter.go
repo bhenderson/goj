@@ -55,7 +55,7 @@ func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
 			}
 		}
 	}
-	// log.Print(b, sel, j, i)
+	// TODO clean this up.
 	if j > len(b) {
 		return
 	}
