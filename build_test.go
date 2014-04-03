@@ -21,7 +21,11 @@ func Test_buildPath(t *testing.T) {
 			"truck": {
 				"color": "yellow",
 				"price": 3.99
-			}
+			},
+			"books": [
+				[ 1, 2 ],
+				[ 3, 4 ]
+			]
 		}
 	}`
 

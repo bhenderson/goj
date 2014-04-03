@@ -39,7 +39,7 @@ func cleanBuild(v interface{}) interface{} {
 		i := 0
 		r := make([]interface{}, len(x))
 		for _, val := range x {
-			r[i] = val
+			r[i] = cleanBuild(val)
 			i++
 		}
 		v = r
