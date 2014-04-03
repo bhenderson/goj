@@ -95,8 +95,14 @@ func (p *pathIndex) Equal(l *Leaf) bool {
 		return false
 	}
 
+	t := l.max
+	var rhs int
 	for _, i := range p.val {
-		if i == l.val.(int) {
+		rhs = l.val.(int)
+		if i < 0 {
+			i = i + t
+		}
+		if i == rhs {
 			return true
 		}
 	}

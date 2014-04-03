@@ -77,6 +77,10 @@ func Test_pathIndex_Equal(t *testing.T) {
 	assert.True(t, p.Equal(l))
 	l.val = 3
 	assert.False(t, p.Equal(l))
+
+	p = &pathIndex{[]int{-1}}
+	l.val = 9
+	assert.True(t, p.Equal(l))
 }
 
 func Test_pathSlice_Equal(t *testing.T) {

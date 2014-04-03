@@ -163,8 +163,21 @@ func TestPath_FilterOn(t *testing.T) {
 	e, a, m = testFilterOn(t, exp, input, "**.price=3.99..color")
 	assert.Equal(t, e, a, m)
 
-	// e, a, m = testFilterOn(t, `{}`, input, "store.bicycles[0].color....[1].blah")
-	// assert.Equal(t, e, a, m)
+	exp = `{
+		"store": {
+			"bicycles": [
+				{
+					"color": "blue",
+					"price": 2.99
+				}
+			]
+		}
+	}`
+	e, a, m = testFilterOn(t, exp, input, "**.bicycles[-1]")
+	assert.Equal(t, e, a, m)
+
+	e, a, m = testFilterOn(t, `{}`, input, "store.bicycles[0].color....[1].blah")
+	assert.Equal(t, e, a, m)
 }
 
 func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}, m string) {
