@@ -35,16 +35,15 @@ func Test_Decode(t *testing.T) {
 
 func TestDecode_noColor(t *testing.T) {
 	exp := `{
-	"hi": "mom",
-	"n": null,
-	"a": [
-		"b",
-		1
-	]
+  "a": [
+    "b",
+    1
+  ],
+  "hi": "mom",
+  "n": null
 }`
 
 	d := testDecoder(t, exp)
-	c, _ := NewColorSet("never")
 
 	d.Decode("")
 

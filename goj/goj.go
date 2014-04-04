@@ -9,10 +9,10 @@ import (
 	"os"
 )
 
-var color, _ = goj.NewColorSet()
+var color = goj.ColorAuto
 
 func init() {
-	flag.Var(color, "color", fmt.Sprintf("%s %s", "set color option", goj.Colors))
+	flag.Var(&color, "color", fmt.Sprintf("%s %s", "set color option", goj.Colors))
 }
 
 func main() {

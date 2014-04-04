@@ -44,8 +44,10 @@ func (d *Decoder) String() string {
 		return buf.String()
 	}
 
+	// TODO move this into color
 	b, err := json.MarshalIndent(d.v, id.prefix, id.indent)
 
+	// TODO better error handling.
 	if err != nil {
 		panic(err)
 	}
