@@ -24,16 +24,19 @@ const (
 	leafVal
 )
 
-func (n *Leaf) Parent() *Leaf         { return n.parent }
-func (n *Leaf) GetBranch() (b branch) { return getBranch(n) }
-func (n *Leaf) Traverse(cb leafFunc)  { traverse(n, cb) }
-func (n *Leaf) Child() interface{}    { return n.child }
-func (n *Leaf) String() string {
-	if n.kind == leafTrk {
+func (l *Leaf) Parent() *Leaf         { return l.parent }
+func (l *Leaf) GetBranch() (b branch) { return getBranch(l) }
+
+// Traverse does a depth first search starting from leaf and yields the end
+// node to the call back function.
+func (l *Leaf) Traverse(cb leafFunc) { traverse(l, cb) }
+func (l *Leaf) Child() interface{}   { return l.child }
+func (l *Leaf) String() string {
+	if l.kind == leafTrk {
 		// trunk
 		return trunkStr
 	}
-	return fmt.Sprint(n.val)
+	return fmt.Sprint(l.val)
 }
 
 // all branches downstream of this leaf
