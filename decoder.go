@@ -16,16 +16,18 @@ func NewDecoder(r reader) (d *Decoder) {
 	return
 }
 
+// BUG(bh) need public method to access Decoder.v
 type Decoder struct {
 	dec   *json.Decoder
 	v     interface{}
 	color colorSet
 }
 
+// Decode takes a filter string and decodes from reader.
 func (d *Decoder) Decode(f string) (err error) {
 	err = d.dec.Decode(&d.v)
 	if err == nil && f != "" {
-		err = d.FilterOn(f)
+		err = filterOn(d, f)
 	}
 	return
 }
@@ -34,6 +36,7 @@ func (d *Decoder) SetColor(set colorSet) {
 	d.color = set
 }
 
+// String returns nicely formatted json, optionally colored.
 func (d *Decoder) String() string {
 	id := &indent{indent: "  "}
 

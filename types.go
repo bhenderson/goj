@@ -8,8 +8,7 @@ import (
 	"strings"
 )
 
-var EOF = "EOF"
-var UEOF = "unexpected EOF"
+var uEOF = "unexpected EOF"
 
 // pathSel is an interface for each path component
 type pathSel interface {
@@ -220,7 +219,7 @@ func newPathSet(r *strings.Reader) (*pathIndex, bool) {
 			return &pathIndex{}, false
 		}
 		_, e = fmt.Fscanf(r, c)
-		if e != nil && e.Error() != UEOF {
+		if e != nil && e.Error() != uEOF {
 			return &pathIndex{}, false
 		}
 		if n > 0 {

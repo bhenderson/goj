@@ -1,8 +1,10 @@
 package goj
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"log"
 	"strings"
 	"testing"
 )
@@ -28,14 +30,26 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	}
 }
 
-// helpers
+func ExampleNewDecoder() {
+	// Read a line of stding at a time, parsing it as json, then filtering the result.
+	// dec.String() will return pretty printed json as a string.
+	filter := ""
+	reader := strings.NewReader(`{"hi":"mom"}{"foo":"bar"}`)
+	dec := NewDecoder(reader)
 
-func testDecoder(t *testing.T, input string) *Decoder {
-	r := strings.NewReader(input)
-	dec := NewDecoder(r)
+	for {
+		if err := dec.Decode(filter); err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
 
-	if err := dec.Decode(""); err != nil {
-		t.Fatal(err)
+		fmt.Println(dec)
 	}
-	return dec
+	// Output: {
+	//   "hi": "mom"
+	//}
+	//{
+	//   "foo": "bar"
+	//}
 }

@@ -2,11 +2,11 @@ package goj
 
 // import "log"
 
-type NullWriter int
+type nullWriter int
 
-func (NullWriter) Write([]byte) (int, error) { return 0, nil }
+func (nullWriter) Write([]byte) (int, error) { return 0, nil }
 
-func (d *Decoder) FilterOn(s string) error {
+func filterOn(d *Decoder, s string) error {
 	p, err := NewPath(s, d.v)
 
 	if err != nil {

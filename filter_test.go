@@ -5,26 +5,7 @@ import (
 	"testing"
 )
 
-var input = `{
-	"store": {
-		"bicycles": [
-			{
-				"color": "red",
-				"price": 3.99
-			},
-			{
-				"color": "blue",
-				"price": 2.99
-			}
-		],
-		"truck": {
-			"color": "yellow",
-			"price": 3.99
-		}
-	}
-}`
-
-func TestPath_FilterOn(t *testing.T) {
+func Test_filterOn(t *testing.T) {
 	var exp, m string
 	var e, a interface{}
 
@@ -196,7 +177,7 @@ func TestPath_FilterOn(t *testing.T) {
 func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}, m string) {
 	d1 := testDecoder(t, exp)
 	d2 := testDecoder(t, input)
-	err := d2.FilterOn(filter)
+	err := filterOn(d2, filter)
 
 	if err != nil {
 		t.Fatal(err)
