@@ -19,7 +19,7 @@ func NewDecoder(r reader) (d *Decoder) {
 type Decoder struct {
 	dec   *json.Decoder
 	v     interface{}
-	color *ColorSet
+	color colorSet
 }
 
 func (d *Decoder) Decode(f string) (err error) {
@@ -30,7 +30,7 @@ func (d *Decoder) Decode(f string) (err error) {
 	return
 }
 
-func (d *Decoder) SetColor(set *ColorSet) {
+func (d *Decoder) SetColor(set colorSet) {
 	d.color = set
 }
 
@@ -53,13 +53,13 @@ func (d *Decoder) String() string {
 	return string(b)
 }
 
-func shouldColor(set *ColorSet) (b bool) {
-	switch set.c {
-	case colorAlways:
+func shouldColor(set colorSet) (b bool) {
+	switch set {
+	case ColorAlways:
 		b = true
-	case colorNever:
+	case ColorNever:
 		b = false
-	case colorAuto:
+	case ColorAuto:
 		b = terminal.IsTerminal(1)
 	}
 

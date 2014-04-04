@@ -24,10 +24,29 @@ func Test_Decode(t *testing.T) {
 
 	r := strings.NewReader(input)
 	dec := NewDecoder(r)
+	dec.SetColor(ColorAuto)
 
 	if err := dec.Decode(""); err != nil {
 		t.Fatal(err)
 	}
 
 	assert.Equal(t, output, dec.String())
+}
+
+func TestDecode_noColor(t *testing.T) {
+	exp := `{
+	"hi": "mom",
+	"n": null,
+	"a": [
+		"b",
+		1
+	]
+}`
+
+	d := testDecoder(t, exp)
+	c, _ := NewColorSet("never")
+
+	d.Decode("")
+
+	assert.Equal(t, exp, d.String())
 }
