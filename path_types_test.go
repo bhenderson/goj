@@ -55,7 +55,7 @@ func Test_pathVal_Equal(t *testing.T) {
 	assert.False(t, p.Equal(l))
 
 	l.val = nil
-	p = &pathVal{nil}
+	p = &pathVal{""}
 	assert.True(t, p.Equal(l))
 
 	p = &pathVal{"null"}
@@ -65,7 +65,6 @@ func Test_pathVal_Equal(t *testing.T) {
 	assert.False(t, p.Equal(l))
 
 	l.val = ""
-	p = &pathVal{"*"}
 	assert.True(t, p.Equal(l))
 }
 

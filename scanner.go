@@ -103,11 +103,7 @@ L:
 		}
 	}
 
-	if i != 0 {
-		appendPathSel(p, &pathVal{data[:i]})
-	} else {
-		appendPathSel(p, &pathVal{nil})
-	}
+	appendPathSel(p, &pathVal{data[:i]})
 
 	i = i + 1 + escapes
 

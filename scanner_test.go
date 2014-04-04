@@ -18,7 +18,7 @@ func TestPath_Compile(t *testing.T) {
 	exp, act, msg = helpPath(`a=b`, &pathKey{"a"}, &pathVal{"b"})
 	assert.Equal(t, exp, act, msg)
 
-	exp, act, msg = helpPath(`=`, &pathKey{"*"}, &pathVal{nil})
+	exp, act, msg = helpPath(`=`, &pathKey{"*"}, &pathVal{""})
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPath(`a=b..c`, &pathKey{"a"}, &pathVal{"b"}, &pathParent{}, &pathKey{"c"})

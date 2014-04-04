@@ -48,7 +48,7 @@ func (p *pathKey) Equal(l *Leaf) bool {
 }
 
 type pathVal struct {
-	val interface{}
+	val string
 }
 
 func (p *pathVal) Equal(l *Leaf) bool {
@@ -57,11 +57,11 @@ func (p *pathVal) Equal(l *Leaf) bool {
 	}
 
 	if l.val == nil {
-		return p.val == l.val
+		return p.val == ""
 	}
 
 	// type assertion?
-	lhs := fmt.Sprint(p.val)
+	lhs := p.val
 	rhs := fmt.Sprint(l.val)
 	if lhs == rhs {
 		return true
