@@ -36,7 +36,7 @@ func main() {
 }
 
 func filter() string {
-	if len(flag.Args()) > 1 {
+	if len(flag.Args()) > 0 {
 		return flag.Args()[0]
 	}
 	return ""
