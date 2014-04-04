@@ -5,13 +5,12 @@ import "fmt"
 type Path struct {
 	p   string
 	v   interface{}
-	r   interface{}
 	err error
 	sel []pathSel
 }
 
 func NewPath(s string, v interface{}) (*Path, error) {
-	p := &Path{p: s, v: v, r: copyZero(v)}
+	p := &Path{p: s, v: v}
 	if err := p.parse(); err != nil {
 		return nil, err
 	}

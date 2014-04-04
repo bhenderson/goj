@@ -15,9 +15,7 @@ func filterOn(d *Decoder, s string) error {
 
 	tree := NewTree(d.v)
 
-	p.r = tree.PruneBranches(p.sel, p.r)
-
-	d.v = cleanBuild(p.r)
+	d.v = tree.PruneBranches(p.sel)
 
 	return nil
 }
