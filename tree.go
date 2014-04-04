@@ -47,8 +47,8 @@ func (l *Leaf) Branches(cb func(b branch)) {
 	})
 }
 
-func (leaf *Leaf) PruneBranches(p *Path) interface{} {
-	v := copyZero(leaf.Child())
+func (l *Leaf) PruneBranches(p *Path) interface{} {
+	v := copyZero(l.Child())
 
 	cb := func(l2 *Leaf) {
 		l2.Traverse(func(l3 *Leaf) {
@@ -56,7 +56,7 @@ func (leaf *Leaf) PruneBranches(p *Path) interface{} {
 		})
 	}
 
-	filterBranches(leaf, p.sel, cb)
+	filterBranches(l, p.sel, cb)
 	cleanBuild(v)
 	return v
 }
