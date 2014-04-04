@@ -7,7 +7,7 @@ type nullWriter int
 func (nullWriter) Write([]byte) (int, error) { return 0, nil }
 
 func filterOn(d *Decoder, s string) error {
-	p, err := NewPath(s, d.v)
+	p, err := NewPath(s)
 
 	if err != nil {
 		return err

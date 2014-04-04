@@ -4,13 +4,12 @@ import "fmt"
 
 type Path struct {
 	p   string
-	v   interface{}
 	err error
 	sel []pathSel
 }
 
-func NewPath(s string, v interface{}) (*Path, error) {
-	p := &Path{p: s, v: v}
+func NewPath(s string) (*Path, error) {
+	p := &Path{p: s}
 	if err := p.parse(); err != nil {
 		return nil, err
 	}
