@@ -2,7 +2,7 @@ package goj
 
 // import "log"
 
-func buildBranch(b Branch, v interface{}) interface{} {
+func buildBranch(b branch, v interface{}) interface{} {
 	if len(b) < 1 {
 		return v
 	}

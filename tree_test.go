@@ -75,7 +75,7 @@ func TestLeaf_Branches(t *testing.T) {
 	leaf = leaf.Parent()
 
 	i = 0
-	leaf.Branches(func(b Branch) {
+	leaf.Branches(func(b branch) {
 		i++
 		t.Log(b)
 	})

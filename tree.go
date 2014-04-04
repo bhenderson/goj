@@ -4,7 +4,8 @@ import "fmt"
 
 type leafFunc func(n *Leaf)
 
-type Branch []*Leaf
+// TODO should we remove this?
+type branch []*Leaf
 
 const trunkStr = "trunk"
 
@@ -24,7 +25,7 @@ const (
 )
 
 func (n *Leaf) Parent() *Leaf         { return n.parent }
-func (n *Leaf) GetBranch() (b Branch) { return getBranch(n) }
+func (n *Leaf) GetBranch() (b branch) { return getBranch(n) }
 func (n *Leaf) Traverse(cb leafFunc)  { traverse(n, cb) }
 func (n *Leaf) Child() interface{}    { return n.child }
 func (n *Leaf) String() string {
@@ -36,7 +37,7 @@ func (n *Leaf) String() string {
 }
 
 // all branches downstream of this leaf
-func (l *Leaf) Branches(cb func(b Branch)) {
+func (l *Leaf) Branches(cb func(b branch)) {
 	i := len(l.GetBranch())
 	l.Traverse(func(leaf *Leaf) {
 		cb(leaf.GetBranch()[i:])
@@ -47,15 +48,15 @@ func NewTree(v interface{}) *Leaf {
 	return &Leaf{child: v, kind: leafTrk}
 }
 
-func getBranch(n *Leaf) (b Branch) {
+func getBranch(n *Leaf) (b branch) {
 	if p := n.Parent(); p != nil {
 		b = p.GetBranch()
 		b = append(b, n)
 		return b
 	} else if n.kind == leafTrk {
-		return Branch{}
+		return branch{}
 	} else {
-		return Branch{n}
+		return branch{n}
 	}
 }
 

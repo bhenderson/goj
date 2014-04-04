@@ -29,12 +29,12 @@ func filterOn(d *Decoder, s string) error {
 }
 
 func filterBranches(leaf *Leaf, sel []pathSel, cb func(*Leaf)) {
-	leaf.Branches(func(b Branch) {
+	leaf.Branches(func(b branch) {
 		filterBranch(b, sel, cb)
 	})
 }
 
-func filterBranch(b Branch, sel []pathSel, cb func(*Leaf)) {
+func filterBranch(b branch, sel []pathSel, cb func(*Leaf)) {
 	var i, j int
 	for ; i < len(sel) && j <= len(b); i, j = i+1, j+1 {
 		x := sel[i]
