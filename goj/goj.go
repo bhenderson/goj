@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/bhenderson/goj"
 	"io"
@@ -8,8 +9,18 @@ import (
 	"os"
 )
 
+var color, _ = goj.NewColorSet()
+
+func init() {
+	flag.Var(color, "color", fmt.Sprintf("%s %s", "set color option", goj.Colors))
+}
+
 func main() {
+	flag.Parse()
+
 	dec := goj.NewDecoder(os.Stdin)
+	dec.SetColor(color)
+
 	f := filter()
 
 	for {
@@ -25,8 +36,8 @@ func main() {
 }
 
 func filter() string {
-	if len(os.Args) > 1 {
-		return os.Args[1]
+	if len(flag.Args()) > 1 {
+		return flag.Args()[0]
 	}
 	return ""
 }

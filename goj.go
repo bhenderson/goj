@@ -3,6 +3,7 @@ package goj
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/bhenderson/terminal"
 )
 
 // io.Reader without io
@@ -16,8 +17,9 @@ func NewDecoder(r reader) (d *Decoder) {
 }
 
 type Decoder struct {
-	dec *json.Decoder
-	v   interface{}
+	dec   *json.Decoder
+	v     interface{}
+	color *ColorSet
 }
 
 func (d *Decoder) Decode(f string) (err error) {
@@ -28,9 +30,38 @@ func (d *Decoder) Decode(f string) (err error) {
 	return
 }
 
-func (d *Decoder) String() string {
-	var buf bytes.Buffer
-	colorize(&buf, d.v, &indent{indent: "  "})
+func (d *Decoder) SetColor(set *ColorSet) {
+	d.color = set
+}
 
-	return buf.String()
+func (d *Decoder) String() string {
+	id := &indent{indent: "  "}
+
+	if shouldColor(d.color) {
+		var buf bytes.Buffer
+		colorize(&buf, d.v, id)
+
+		return buf.String()
+	}
+
+	b, err := json.MarshalIndent(d.v, id.prefix, id.indent)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
+func shouldColor(set *ColorSet) (b bool) {
+	switch set.c {
+	case colorAlways:
+		b = true
+	case colorNever:
+		b = false
+	case colorAuto:
+		b = terminal.IsTerminal(1)
+	}
+
+	return b
 }
