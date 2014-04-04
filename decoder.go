@@ -24,8 +24,8 @@ type Decoder struct {
 }
 
 // Val is the attribute reader for getting the decoded json value.
-func (d *Decoder) Val() Val {
-	return Val(d.v)
+func (d *Decoder) Val() interface{} {
+	return d.v
 }
 
 // Decode takes a filter string and decodes from reader.
