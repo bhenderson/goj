@@ -110,3 +110,13 @@ func traverse(parent *Leaf, cb leafFunc) {
 		cb(leaf)
 	}
 }
+
+func copyZero(v interface{}) interface{} {
+	switch v.(type) {
+	case map[string]interface{}:
+		return map[string]interface{}{}
+	case []interface{}:
+		return []interface{}{}
+	}
+	return nil
+}
