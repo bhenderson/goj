@@ -4,7 +4,7 @@ import "fmt"
 
 type leafFunc func(n *Leaf)
 
-// TODO should we remove this?
+// TODO not sure what I want the API to do with this.
 type branch []*Leaf
 
 const trunkStr = "trunk"
