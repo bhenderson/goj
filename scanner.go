@@ -7,11 +7,11 @@ import (
 
 type stateFunc func(*Path, string) (stateFunc, int)
 
-type SyntaxError struct {
+type syntaxError struct {
 	msg string
 }
 
-func (e *SyntaxError) Error() string {
+func (e *syntaxError) Error() string {
 	return e.msg
 }
 
@@ -192,7 +192,7 @@ func stateParent(p *Path, data string) (f stateFunc, i int) {
 // addError returns a stateFunc which sets the error.
 func addError(msg string) stateFunc {
 	return func(p *Path, data string) (f stateFunc, i int) {
-		p.err = &SyntaxError{"invalid path at " + p.p[:len(p.p)-len(data)] + " " + msg}
+		p.err = &syntaxError{"invalid path at " + p.p[:len(p.p)-len(data)] + " " + msg}
 		return
 	}
 }

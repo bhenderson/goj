@@ -3,7 +3,6 @@ package goj
 import (
 	"errors"
 	"fmt"
-	// "log"
 	"path/filepath"
 	"strings"
 )
@@ -15,25 +14,17 @@ type pathSel interface {
 	Equal(l *Leaf) bool
 }
 
+// pathRec implements pathSel and stands for **
 type pathRec struct{}
 
-func (p *pathRec) Equal(l *Leaf) bool {
-	return true
-}
+func (p *pathRec) Equal(l *Leaf) bool { return true }
+func (p *pathRec) String() string     { return "**" }
 
-func (p *pathRec) String() string {
-	return "**"
-}
-
+// pathParent implements pathSel and stands for ..
 type pathParent struct{}
 
-func (p *pathParent) Equal(l *Leaf) bool {
-	return true
-}
-
-func (p *pathParent) String() string {
-	return ".."
-}
+func (p *pathParent) Equal(l *Leaf) bool { return true }
+func (p *pathParent) String() string     { return ".." }
 
 type pathKey struct {
 	val string
