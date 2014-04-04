@@ -37,6 +37,7 @@ func (d *Decoder) Decode(f string) (err error) {
 	return
 }
 
+// SetColor sets the option to colorize the pretty formatting. Takes one of Colors.
 func (d *Decoder) SetColor(set colorSet) {
 	d.color = set
 }
