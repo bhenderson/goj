@@ -3,8 +3,11 @@ package goj
 import "fmt"
 
 type Path struct {
-	p   string
+	// the original string, useful for constructing errors.
+	p string
+	// an error, if any. Useful in the state function.
 	err error
+	// the array of path elements.
 	sel []pathSel
 }
 
