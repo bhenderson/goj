@@ -10,21 +10,22 @@ import (
 )
 
 var color = goj.ColorAuto
+var filter string
+var debug bool
 
 func init() {
 	flag.Var(&color, "color", fmt.Sprintf("%s %s", "set color option", goj.Colors))
+	flag.BoolVar(&debug, "debug", false, "set debugging")
 }
 
 func main() {
-	flag.Parse()
+	parseFlags()
 
 	dec := goj.NewDecoder(os.Stdin)
 	dec.SetColor(color)
 
-	f := filter()
-
 	for {
-		if err := dec.Decode(f); err == io.EOF {
+		if err := dec.Decode(filter); err == io.EOF {
 			break
 		} else if err != nil {
 			log.Fatal(err)
@@ -35,9 +36,12 @@ func main() {
 
 }
 
-func filter() string {
+func parseFlags() {
+	flag.Parse()
 	if len(flag.Args()) > 0 {
-		return flag.Args()[0]
+		filter = flag.Args()[0]
+		if debug {
+			log.Println(filter)
+		}
 	}
-	return ""
 }
