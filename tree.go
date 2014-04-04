@@ -44,6 +44,17 @@ func (l *Leaf) Branches(cb func(b branch)) {
 	})
 }
 
+func (leaf *Leaf) PruneBranches(sel []pathSel, v interface{}) interface{} {
+	cb := func(l2 *Leaf) {
+		l2.Traverse(func(l3 *Leaf) {
+			v = buildBranch(l3.GetBranch(), v)
+		})
+	}
+
+	filterBranches(leaf, sel, cb)
+	return v
+}
+
 func NewTree(v interface{}) *Leaf {
 	return &Leaf{child: v, kind: leafTrk}
 }

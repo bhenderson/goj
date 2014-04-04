@@ -15,19 +15,14 @@ func filterOn(d *Decoder, s string) error {
 
 	tree := NewTree(d.v)
 
-	cb := func(leaf *Leaf) {
-		leaf.Traverse(func(l *Leaf) {
-			p.r = buildBranch(l.GetBranch(), p.r)
-		})
-	}
-
-	filterBranches(tree, p.sel, cb)
+	p.r = tree.PruneBranches(p.sel, p.r)
 
 	d.v = cleanBuild(p.r)
 
 	return nil
 }
 
+// filterBranches yields the last leaf in a branch that matches sel.
 func filterBranches(leaf *Leaf, sel []pathSel, cb func(*Leaf)) {
 	leaf.Branches(func(b branch) {
 		filterBranch(b, sel, cb)
