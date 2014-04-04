@@ -23,6 +23,11 @@ type Decoder struct {
 	color colorSet
 }
 
+// Val is the attribute reader for getting the decoded json value.
+func (d *Decoder) Val() Val {
+	return Val(d.v)
+}
+
 // Decode takes a filter string and decodes from reader.
 func (d *Decoder) Decode(f string) (err error) {
 	err = d.dec.Decode(&d.v)

@@ -31,8 +31,7 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 }
 
 func ExampleNewDecoder() {
-	// Read a line of stding at a time, parsing it as json, then filtering the result.
-	// dec.String() will return pretty printed json as a string.
+	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""
 	reader := strings.NewReader(`{"hi":"mom"}{"foo":"bar"}`)
 	dec := NewDecoder(reader)
@@ -44,7 +43,8 @@ func ExampleNewDecoder() {
 			log.Fatal(err)
 		}
 
-		fmt.Println(dec)
+		// dec.Val() -> decoded value
+		fmt.Println(dec) // optionally colorized output
 	}
 	// Output: {
 	//   "hi": "mom"
