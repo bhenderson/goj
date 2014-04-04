@@ -53,6 +53,20 @@ func Test_pathVal_Equal(t *testing.T) {
 
 	p = &pathVal{"4.99"}
 	assert.False(t, p.Equal(l))
+
+	l.val = nil
+	p = &pathVal{nil}
+	assert.True(t, p.Equal(l))
+
+	p = &pathVal{"null"}
+	assert.False(t, p.Equal(l))
+
+	p = &pathVal{"*"}
+	assert.False(t, p.Equal(l))
+
+	l.val = ""
+	p = &pathVal{"*"}
+	assert.True(t, p.Equal(l))
 }
 
 func Test_pathIndex_Equal(t *testing.T) {

@@ -55,6 +55,11 @@ func (p *pathVal) Equal(l *Leaf) bool {
 	if l.kind != leafVal {
 		return false
 	}
+
+	if l.val == nil {
+		return p.val == l.val
+	}
+
 	// type assertion?
 	lhs := fmt.Sprint(p.val)
 	rhs := fmt.Sprint(l.val)
