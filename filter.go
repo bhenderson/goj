@@ -9,7 +9,7 @@ func filterOn(d *Decoder, s string) error {
 
 	tree := NewTree(d.v)
 
-	d.v = tree.PruneBranches(p.sel)
+	d.v = tree.PruneBranches(p)
 
 	return nil
 }
