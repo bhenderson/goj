@@ -3,7 +3,7 @@ package goj
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/bhenderson/terminal"
+	terminal "github.com/bhenderson/terminal-go"
 )
 
 // io.Reader without io
