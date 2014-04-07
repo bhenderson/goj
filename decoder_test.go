@@ -29,6 +29,19 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	}
 }
 
+func Test_copy(t *testing.T) {
+	var n *Decoder
+	d := testDecoder(t, input)
+	d.color = ColorNever
+
+	n = d.Copy()
+	n.color = ColorAlways
+
+	assert.Equal(t, d.v, n.v)
+	assert.Equal(t, ColorNever, d.color)
+	assert.Equal(t, ColorAlways, n.color)
+}
+
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""

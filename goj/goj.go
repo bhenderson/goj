@@ -38,7 +38,8 @@ func main() {
 			fmt.Println(string(b))
 			diff = true
 		}
-		prev = dec.Copy()
+		cpy := *dec
+		prev = &cpy
 	}
 
 	if !diff {

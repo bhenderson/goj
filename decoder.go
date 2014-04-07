@@ -22,14 +22,7 @@ type Decoder struct {
 	dec   *json.Decoder
 	file  *os.File
 	v     interface{}
-}
-
-func (d *Decoder) Copy() *Decoder {
-	return &Decoder{
-		color: d.color,
-		file:  d.file,
-		v:     d.v,
-	}
+	ind   *indent
 }
 
 // Val is the attribute reader for getting the decoded json value.
@@ -57,7 +50,7 @@ func (d *Decoder) SetColor(set colorSet) {
 
 // String returns nicely formatted json, optionally colored.
 func (d *Decoder) String() string {
-	id := &indent{indent: "  "}
+	id := d.indent()
 
 	if d.color.IsTrue() {
 		var buf bytes.Buffer
@@ -71,7 +64,7 @@ func (d *Decoder) String() string {
 
 func (d *Decoder) StringColorless() string {
 	// TODO move this into color
-	id := &indent{indent: "  "}
+	id := d.indent()
 
 	b, err := json.MarshalIndent(d.v, id.prefix, id.indent)
 
@@ -81,4 +74,12 @@ func (d *Decoder) StringColorless() string {
 	}
 
 	return string(b)
+}
+
+func (d *Decoder) indent() *indent {
+	if d.ind == nil {
+		d.ind = &indent{indent: "  "}
+	}
+
+	return d.ind
 }
