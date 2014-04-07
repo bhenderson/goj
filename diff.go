@@ -20,38 +20,35 @@ func Diff(d1, d2 *Decoder) (b []byte, err error) {
 		err = tempFile(d2.String(), func(f2 *os.File) {
 			// if tempFile returns an error, the callback won't be called.
 			b, err = exec.Command("git", "diff", "--color=always", "--no-index", f1.Name(), f2.Name()).Output()
+			// TODO err?
+			b = cleanDiff(b, d1, d2, f1, f2)
 		})
 	})
-
-	b = cleanDiff(b, d1, d2)
 
 	return
 }
 
-func cleanDiff(b []byte, d1, d2 *Decoder) []byte {
+func cleanDiff(b []byte, d1, d2 *Decoder, f1, f2 *os.File) []byte {
 	buf := bytes.NewBuffer(b)
 
-	// skip first four lines
+	// skip first two lines
 	// git diff specific
 	buf.ReadString('\n')
 	buf.ReadString('\n')
-	buf.ReadString('\n')
-	buf.ReadString('\n')
+
+	// --- filename
+	l1, _ := buf.ReadBytes('\n')
+	// +++ filename
+	l2, _ := buf.ReadBytes('\n')
 
 	b = buf.Bytes()
 	buf.Truncate(0)
 
-	buf.Write(yellowb)
-	buf.WriteString("--- ")
-	buf.WriteString(d1.FileName())
-	buf.Write(reset)
-	buf.WriteRune('\n')
+	l1 = bytes.Replace(l1, []byte(f1.Name()), []byte(d1.FileName()), 1)
+	buf.Write(l1)
 
-	buf.Write(yellowb)
-	buf.WriteString("+++ ")
-	buf.WriteString(d2.FileName())
-	buf.WriteRune('\n')
-	buf.Write(reset)
+	l2 = bytes.Replace(l2, []byte(f2.Name()), []byte(d2.FileName()), 1)
+	buf.Write(l2)
 
 	buf.Write(b)
 
