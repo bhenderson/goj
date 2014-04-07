@@ -34,7 +34,8 @@ func Test_copy(t *testing.T) {
 	d := testDecoder(t, input)
 	d.color = ColorNever
 
-	n = d.Copy()
+	cpy := *d
+	n = &cpy
 	n.color = ColorAlways
 
 	assert.Equal(t, d.v, n.v)
