@@ -21,6 +21,8 @@ func init() {
 func main() {
 	parseFlags()
 
+	var prev *goj.Decoder
+	var diff bool
 	dec := goj.NewDecoder(os.Stdin)
 	dec.SetColor(color)
 
@@ -31,9 +33,17 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Println(dec)
+		if prev != nil {
+			b, _ := goj.Diff(prev, dec)
+			fmt.Println(string(b))
+			diff = true
+		}
+		prev = dec.Copy()
 	}
 
+	if !diff {
+		fmt.Println(dec)
+	}
 }
 
 func parseFlags() {

@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	reset  = []byte(ansi.ColorCode("reset"))
-	yellow = []byte(ansi.ColorCode("yellow"))
+	reset   = []byte(ansi.ColorCode("reset"))
+	yellowb = []byte(ansi.ColorCode("yellow+b"))
 )
 
 type colorFunc func(dst *bytes.Buffer, v interface{}) error
