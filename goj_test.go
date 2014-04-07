@@ -1,6 +1,8 @@
 package goj
 
 import (
+	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 )
@@ -28,7 +30,8 @@ var input = `{
 
 func testDecoder(t *testing.T, input string) *Decoder {
 	r := strings.NewReader(input)
-	dec := NewDecoder(r)
+	f := os.Stdin
+	dec := &Decoder{file: f, dec: json.NewDecoder(r)}
 
 	if err := dec.Decode(""); err != nil {
 		t.Fatal(err)

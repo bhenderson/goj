@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	terminal "github.com/bhenderson/terminal-go"
+	"os"
 )
 
 // io.Reader without io
@@ -11,16 +12,25 @@ type reader interface {
 	Read(p []byte) (n int, err error)
 }
 
-func NewDecoder(r reader) (d *Decoder) {
-	d = &Decoder{dec: json.NewDecoder(r)}
+func NewDecoder(f *os.File) (d *Decoder) {
+	d = &Decoder{file: f, dec: json.NewDecoder(f)}
 	return
 }
 
 // BUG(bh) need public method to access Decoder.v
 type Decoder struct {
-	dec   *json.Decoder
-	v     interface{}
 	color colorSet
+	dec   *json.Decoder
+	file  *os.File
+	v     interface{}
+}
+
+func (d *Decoder) Copy() *Decoder {
+	return &Decoder{
+		color: d.color,
+		file:  d.file,
+		v:     d.v,
+	}
 }
 
 // Val is the attribute reader for getting the decoded json value.
@@ -35,6 +45,10 @@ func (d *Decoder) Decode(f string) (err error) {
 		err = filterOn(d, f)
 	}
 	return
+}
+
+func (d *Decoder) FileName() string {
+	return d.file.Name()
 }
 
 // SetColor sets the option to colorize the pretty formatting. Takes one of Colors.

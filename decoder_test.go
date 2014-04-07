@@ -1,11 +1,10 @@
 package goj
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"log"
-	"strings"
+	"os"
 	"testing"
 )
 
@@ -33,8 +32,7 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""
-	reader := strings.NewReader(`{"hi":"mom"}{"foo":"bar"}`)
-	dec := NewDecoder(reader)
+	dec := NewDecoder(os.Stdin)
 
 	for {
 		if err := dec.Decode(filter); err == io.EOF {
@@ -44,12 +42,5 @@ func ExampleNewDecoder() {
 		}
 
 		// dec.Val() -> decoded value
-		fmt.Println(dec) // optionally colorized output
 	}
-	// Output: {
-	//   "hi": "mom"
-	//}
-	//{
-	//   "foo": "bar"
-	//}
 }

@@ -2,7 +2,6 @@ package goj
 
 import (
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -22,13 +21,8 @@ func Test_Decode(t *testing.T) {
   ]
 }`
 
-	r := strings.NewReader(input)
-	dec := NewDecoder(r)
+	dec := testDecoder(t, input)
 	dec.SetColor(ColorAuto)
-
-	if err := dec.Decode(""); err != nil {
-		t.Fatal(err)
-	}
 
 	assert.Equal(t, output, dec.String())
 }
