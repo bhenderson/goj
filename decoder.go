@@ -3,7 +3,6 @@ package goj
 import (
 	"bytes"
 	"encoding/json"
-	terminal "github.com/bhenderson/terminal-go"
 	"os"
 )
 
@@ -60,7 +59,7 @@ func (d *Decoder) SetColor(set colorSet) {
 func (d *Decoder) String() string {
 	id := &indent{indent: "  "}
 
-	if shouldColor(d.color) {
+	if d.color.IsTrue() {
 		var buf bytes.Buffer
 		colorize(&buf, d.v, id)
 
@@ -82,17 +81,4 @@ func (d *Decoder) StringColorless() string {
 	}
 
 	return string(b)
-}
-
-func shouldColor(set colorSet) (b bool) {
-	switch set {
-	case ColorAlways:
-		b = true
-	case ColorNever:
-		b = false
-	case ColorAuto:
-		b = terminal.IsTerminal(1)
-	}
-
-	return b
 }
