@@ -9,15 +9,8 @@ import (
 )
 
 func Diff(d1, d2 *Decoder) (b []byte, err error) {
-	// reset color
-	c1, c2 := d1.color, d2.color
-	d1.color, d2.color = ColorNever, ColorNever
-	defer func() {
-		d1.color, d2.color = c1, c2
-	}()
-
-	err = tempFile(d1.String(), func(f1 *os.File) {
-		err = tempFile(d2.String(), func(f2 *os.File) {
+	err = tempFile(d1.StringColorless(), func(f1 *os.File) {
+		err = tempFile(d2.StringColorless(), func(f2 *os.File) {
 			// if tempFile returns an error, the callback won't be called.
 			b, err = exec.Command("git", "diff", "--color=always", "--no-index", f1.Name(), f2.Name()).Output()
 			// TODO err?

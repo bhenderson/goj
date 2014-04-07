@@ -67,7 +67,13 @@ func (d *Decoder) String() string {
 		return buf.String()
 	}
 
+	return d.StringColorless()
+}
+
+func (d *Decoder) StringColorless() string {
 	// TODO move this into color
+	id := &indent{indent: "  "}
+
 	b, err := json.MarshalIndent(d.v, id.prefix, id.indent)
 
 	// TODO better error handling.
