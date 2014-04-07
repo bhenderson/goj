@@ -6,7 +6,10 @@ import (
 	"github.com/mgutz/ansi"
 )
 
-var reset = []byte(ansi.ColorCode("reset"))
+var (
+	reset  = []byte(ansi.ColorCode("reset"))
+	yellow = []byte(ansi.ColorCode("yellow"))
+)
 
 type colorFunc func(dst *bytes.Buffer, v interface{}) error
 
@@ -29,11 +32,11 @@ func makeColorFunc(style string) colorFunc {
 }
 
 var (
-	blue   = makeColorFunc("blue")
-	green  = makeColorFunc("green")
-	grey   = makeColorFunc("black+b")
-	yellow = makeColorFunc("yellow")
-	plain  = makeColorFunc("plain")
+	blueFunc   = makeColorFunc("blue")
+	greenFunc  = makeColorFunc("green")
+	greyFunc   = makeColorFunc("black+b")
+	yellowFunc = makeColorFunc("yellow")
+	plainFunc  = makeColorFunc("plain")
 )
 
 type indent struct {
@@ -50,7 +53,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		prefix(idt, buf, '{')
 		for k, val := range x {
 			newline(buf, idt)
-			err = blue(buf, k)
+			err = blueFunc(buf, k)
 			if err != nil {
 				return err
 			}
@@ -77,13 +80,13 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 		}
 		postfix(idt, buf, ']', p)
 	case int, float64:
-		err = yellow(buf, x)
+		err = yellowFunc(buf, x)
 	case string:
-		err = green(buf, x)
+		err = greenFunc(buf, x)
 	case nil:
-		err = grey(buf, x)
+		err = greyFunc(buf, x)
 	default:
-		err = plain(buf, x)
+		err = plainFunc(buf, x)
 	}
 	return
 }
