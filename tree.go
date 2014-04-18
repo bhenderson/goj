@@ -45,13 +45,16 @@ func (l *Leaf) Parent() *Leaf { return l.parent }
 // branch, but it will still be referenced by the first leaf's parent. This is
 // so that other branches can find each other.
 func (l *Leaf) GetBranch() branch {
-	var i int
+	b := make(branch, l.GetBranchLen())
+	getBranch(l, b)
+	return b
+}
+
+func (l *Leaf) GetBranchLen() (i int) {
 	for p := l.Parent(); p != nil; p = p.Parent() {
 		i++
 	}
-	b := make(branch, i)
-	getBranch(l, b)
-	return b
+	return
 }
 
 // Traverse does a depth first search starting from leaf and yields the end
@@ -72,7 +75,7 @@ func (l *Leaf) String() string {
 
 // all branches downstream of this leaf
 func (l *Leaf) Branches(cb func(b branch)) {
-	i := len(l.GetBranch())
+	i := l.GetBranchLen()
 	l.Traverse(func(leaf *Leaf) {
 		cb(leaf.GetBranch()[i:])
 	})
