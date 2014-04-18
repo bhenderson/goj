@@ -14,13 +14,6 @@ func filterOn(d *Decoder, s string) error {
 	return nil
 }
 
-// filterBranches yields the last leaf in a branch that matches sel.
-func filterBranches(leaf *Leaf, sel []pathSel, cb func(*Leaf)) {
-	leaf.Branches(func(b branch) {
-		filterBranch(b, sel, cb)
-	})
-}
-
 func filterBranch(b branch, sel []pathSel, cb func(*Leaf)) {
 	var i, j int
 	for ; i < len(sel) && j <= len(b); i, j = i+1, j+1 {
@@ -60,4 +53,11 @@ func filterParent(leaf *Leaf, sel []pathSel, cb func(*Leaf)) {
 	}
 	leaf = leaf.Parent()
 	filterBranches(leaf, sel, cb)
+}
+
+// filterBranches yields the last leaf in a branch that matches sel.
+func filterBranches(leaf *Leaf, sel []pathSel, cb leafFunc) {
+	leaf.Branches(func(b branch) {
+		filterBranch(b, sel, cb)
+	})
 }
