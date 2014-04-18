@@ -110,6 +110,12 @@ func TestPath_CompileEscapeChar(t *testing.T) {
 
 }
 
+func BenchmarkNewPath(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		NewPath(`stor\[e\][0]..books[1].foo.bar.baz.**`)
+	}
+}
+
 func helpPathErr(s, exp string) (e, a, m string) {
 	_, err := NewPath(s)
 	if err == nil {
