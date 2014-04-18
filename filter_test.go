@@ -186,3 +186,14 @@ func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interfac
 	// t.Log(d1, d2)
 	return d1.v, d2.v, filter
 }
+
+func BenchmarkFilterOn(b *testing.B) {
+	d := testDecoder(b, input)
+	tree := NewTree(d.v)
+	p, _ := NewPath("**.price..color")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tree.PruneBranches(p)
+	}
+}

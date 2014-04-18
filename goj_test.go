@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
-	"testing"
 )
 
 // test helpers
@@ -28,7 +27,11 @@ var input = `{
 	}
 }`
 
-func testDecoder(t *testing.T, input string) *Decoder {
+type intTest interface {
+	Fatal(args ...interface{})
+}
+
+func testDecoder(t intTest, input string) *Decoder {
 	r := strings.NewReader(input)
 	f := os.Stdin
 	dec := &Decoder{file: f, dec: json.NewDecoder(r)}
