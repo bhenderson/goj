@@ -44,7 +44,15 @@ func (l *Leaf) Parent() *Leaf { return l.parent }
 // There is a special leaf type (the trunk) which will not be included in the
 // branch, but it will still be referenced by the first leaf's parent. This is
 // so that other branches can find each other.
-func (l *Leaf) GetBranch() (b branch) { return getBranch(l) }
+func (l *Leaf) GetBranch() branch {
+	var i int
+	for p := l.Parent(); p != nil; p = p.Parent() {
+		i++
+	}
+	b := make(branch, i)
+	getBranch(l, b)
+	return b
+}
 
 // Traverse does a depth first search starting from leaf and yields the end
 // node to the call back function.
@@ -92,15 +100,14 @@ func NewTree(v interface{}) *Leaf {
 	return &Leaf{child: v, kind: leafTrk}
 }
 
-func getBranch(n *Leaf) (b branch) {
+func getBranch(n *Leaf, b branch) {
+	if len(b) < 1 {
+		return
+	}
+	i := len(b) - 1
+	b[i] = n
 	if p := n.Parent(); p != nil {
-		b = p.GetBranch()
-		b = append(b, n)
-		return b
-	} else if n.kind == leafTrk {
-		return branch{}
-	} else {
-		return branch{n}
+		getBranch(p, b[:i])
 	}
 }
 
