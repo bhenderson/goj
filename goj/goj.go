@@ -4,9 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/bhenderson/goj"
-	"io"
 	"log"
-	"os"
 )
 
 var (
@@ -23,6 +21,9 @@ func init() {
 
 func main() {
 	filter, files, err := goj.ParseFlags()
+	if debug {
+		log.Println(filter)
+	}
 
 	if err != nil {
 		log.Fatalln(err)

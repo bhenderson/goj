@@ -53,15 +53,17 @@ func internDecode(d *Decoder) {
 	for _, f := range d.files {
 		dec := json.NewDecoder(f)
 		for {
-			v := &Val{file: f, dec: d}
-			if err := dec.Decode(&v.v); err != nil {
+			var v interface{}
+			if err := dec.Decode(&v); err != nil {
 				if err.Error() == "EOF" {
 					break
 				} else {
 					// do something with the error
 				}
+			} else {
+				val := &Val{v: v, file: f, dec: d}
+				d.outc <- val
 			}
-			d.outc <- v
 		}
 	}
 	close(d.outc)

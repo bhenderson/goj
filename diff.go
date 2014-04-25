@@ -12,7 +12,7 @@ func Diff(v1, v2 *Val) (b []byte, err error) {
 	// TODO error handling
 	b1, _ := v1.MarshalJSON()
 	err = tempFile(b1, func(f1 *os.File) {
-		b2, _ := v1.MarshalJSON()
+		b2, _ := v2.MarshalJSON()
 		err = tempFile(b2, func(f2 *os.File) {
 			// if tempFile returns an error, the callback won't be called.
 			b, err = exec.Command("git", "diff", "--color=always", "--no-index", f1.Name(), f2.Name()).Output()
