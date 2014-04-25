@@ -24,7 +24,7 @@ func Diff(v1, v2 *Val) (b []byte, err error) {
 	return
 }
 
-func cleanDiff(b []byte, v1, v2 *Val, f1, f2 *os.File) []byte {
+func cleanDiff(b []byte, v1, v2 *Val, f1, f2 File) []byte {
 	buf := bytes.NewBuffer(b)
 
 	// skip first two lines
@@ -40,15 +40,24 @@ func cleanDiff(b []byte, v1, v2 *Val, f1, f2 *os.File) []byte {
 	b = buf.Bytes()
 	buf.Truncate(0)
 
-	l1 = bytes.Replace(l1, []byte(f1.Name()), []byte(v1.FileName()), 1)
+	l1 = cleanName(l1, f1, v1)
 	buf.Write(l1)
 
-	l2 = bytes.Replace(l2, []byte(f2.Name()), []byte(v2.FileName()), 1)
+	l2 = cleanName(l2, f2, v2)
 	buf.Write(l2)
 
 	buf.Write(b)
 
 	return buf.Bytes()
+}
+
+func cleanName(l []byte, f File, v *Val) []byte {
+	name1 := f.Name()
+	name2 := v.FileName()
+	if name2[0] != '/' {
+		name1 = name1[1:]
+	}
+	return bytes.Replace(l, []byte(name1), []byte(name2), 1)
 }
 
 func tempFile(b []byte, cb func(*os.File)) (err error) {
