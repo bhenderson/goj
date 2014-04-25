@@ -38,7 +38,9 @@ func (d *Decoder) Decode(f string, diff bool) <-chan *Val {
 			filterOn(v, f)
 			if diff {
 				v1 := <-d.outc
-				filterOn(v1, f)
+				if v1 != nil {
+					filterOn(v1, f)
+				}
 				v.d = v1
 			}
 			out <- v

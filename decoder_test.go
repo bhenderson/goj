@@ -13,17 +13,30 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 		{"c":"d"}
 	`
 	dec := testDecoder(t, input)
+	out := dec.Decode("", false)
 
-	act := <-dec.outc
+	act := <-out
 	exp := `{"a":"b"}`
 	assert.Equal(t, testMarshal(t, exp), act.v)
 
-	act = <-dec.outc
+	act = <-out
 	exp = `{"c":"d"}`
 	assert.Equal(t, testMarshal(t, exp), act.v)
 
-	act = <-dec.outc
-	assert.Equal(t, (*Val)(nil), act)
+	act = <-out
+	assert.True(t, nil == act)
+}
+
+func Test_DecodeDiffSingleInput(t *testing.T) {
+	input := `
+		{"a":"b"}
+	`
+	dec := testDecoder(t, input)
+	out := dec.Decode("", true)
+
+	act := <-out
+	exp := `{"a":"b"}`
+	assert.Equal(t, testMarshal(t, exp), act.v)
 }
 
 func ExampleNewDecoder() {
