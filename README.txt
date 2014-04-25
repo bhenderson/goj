@@ -3,7 +3,6 @@ goj
 TODO:
 
 * sort map keys
-* diff two jsons
 * proper go docs
 * inspect performance
 * proper cmd usage
@@ -11,3 +10,4 @@ TODO:
   * '**.book(@.length)', 'store(@.keys)', 'store.book[*](@.keys)'
   * '**.book(length)', 'store(keys)', 'store.book[*](keys)'
 
+* should stdin be assumed?
