@@ -8,20 +8,23 @@ import (
 	"os/exec"
 )
 
-func Diff(d1, d2 *Decoder) (b []byte, err error) {
-	err = tempFile(d1.StringColorless(), func(f1 *os.File) {
-		err = tempFile(d2.StringColorless(), func(f2 *os.File) {
+func Diff(v1, v2 *Val) (b []byte, err error) {
+	// TODO error handling
+	b1, _ := v1.MarshalJSON()
+	err = tempFile(b1, func(f1 *os.File) {
+		b2, _ := v1.MarshalJSON()
+		err = tempFile(b2, func(f2 *os.File) {
 			// if tempFile returns an error, the callback won't be called.
 			b, err = exec.Command("git", "diff", "--color=always", "--no-index", f1.Name(), f2.Name()).Output()
 			// TODO err?
-			b = cleanDiff(b, d1, d2, f1, f2)
+			b = cleanDiff(b, v1, v2, f1, f2)
 		})
 	})
 
 	return
 }
 
-func cleanDiff(b []byte, d1, d2 *Decoder, f1, f2 *os.File) []byte {
+func cleanDiff(b []byte, v1, v2 *Val, f1, f2 *os.File) []byte {
 	buf := bytes.NewBuffer(b)
 
 	// skip first two lines
@@ -37,10 +40,10 @@ func cleanDiff(b []byte, d1, d2 *Decoder, f1, f2 *os.File) []byte {
 	b = buf.Bytes()
 	buf.Truncate(0)
 
-	l1 = bytes.Replace(l1, []byte(f1.Name()), []byte(d1.FileName()), 1)
+	l1 = bytes.Replace(l1, []byte(f1.Name()), []byte(v1.FileName()), 1)
 	buf.Write(l1)
 
-	l2 = bytes.Replace(l2, []byte(f2.Name()), []byte(d2.FileName()), 1)
+	l2 = bytes.Replace(l2, []byte(f2.Name()), []byte(v2.FileName()), 1)
 	buf.Write(l2)
 
 	buf.Write(b)
@@ -48,7 +51,7 @@ func cleanDiff(b []byte, d1, d2 *Decoder, f1, f2 *os.File) []byte {
 	return buf.Bytes()
 }
 
-func tempFile(s string, cb func(*os.File)) (err error) {
+func tempFile(b []byte, cb func(*os.File)) (err error) {
 	f, err := ioutil.TempFile("", "goj")
 
 	if err != nil {
@@ -60,7 +63,7 @@ func tempFile(s string, cb func(*os.File)) (err error) {
 		os.Remove(f.Name())
 	}()
 
-	f.WriteString(s)
+	f.Write(b)
 
 	// rewind
 	f.Seek(0, 0)

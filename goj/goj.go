@@ -9,50 +9,29 @@ import (
 	"os"
 )
 
-var color = goj.ColorAuto
-var filter string
-var debug bool
+var (
+	color = goj.ColorAuto
+	debug bool
+	diff  bool
+)
 
 func init() {
 	flag.Var(&color, "color", fmt.Sprintf("%s %s", "set color option", goj.Colors))
 	flag.BoolVar(&debug, "debug", false, "set debugging")
+	flag.BoolVar(&diff, "diff", false, "set diff option")
 }
 
 func main() {
-	parseFlags()
+	filter, files, err := goj.ParseFlags()
 
-	var prev *goj.Decoder
-	var diff bool
-	dec := goj.NewDecoder(os.Stdin)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	dec := goj.NewDecoder(files...)
 	dec.SetColor(color)
 
-	for {
-		if err := dec.Decode(filter); err == io.EOF {
-			break
-		} else if err != nil {
-			log.Fatal(err)
-		}
-
-		if prev != nil {
-			b, _ := goj.Diff(prev, dec)
-			fmt.Println(string(b))
-			diff = true
-		}
-		cpy := *dec
-		prev = &cpy
-	}
-
-	if !diff {
-		fmt.Println(dec)
-	}
-}
-
-func parseFlags() {
-	flag.Parse()
-	if len(flag.Args()) > 0 {
-		filter = flag.Args()[0]
-		if debug {
-			log.Println(filter)
-		}
+	for val := range dec.Decode(filter, diff) {
+		fmt.Println(val)
 	}
 }

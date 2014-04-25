@@ -1,15 +1,15 @@
 package goj
 
-func filterOn(d *Decoder, s string) error {
+func filterOn(v *Val, s string) error {
 	p, err := NewPath(s)
 
 	if err != nil {
 		return err
 	}
 
-	tree := NewTree(d.v)
+	tree := NewTree(v.v)
 
-	d.v = tree.PruneBranches(p)
+	v.v = tree.PruneBranches(p)
 
 	return nil
 }

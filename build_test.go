@@ -29,8 +29,8 @@ func Test_buildPath(t *testing.T) {
 		}
 	}`
 
-	d := testDecoder(t, exp)
-	tree := NewTree(d.v)
+	val := testVal(t, exp)
+	tree := NewTree(val.v)
 
 	var v interface{}
 
@@ -38,5 +38,5 @@ func Test_buildPath(t *testing.T) {
 		v = buildBranch(l.GetBranch(), v)
 	})
 	v = cleanBuild(v)
-	assert.Equal(t, d.v, v)
+	assert.Equal(t, val.v, v)
 }

@@ -28,9 +28,9 @@ var tree = `{
 }`
 
 func TestLeaf_Traverse(t *testing.T) {
-	d := testDecoder(t, tree)
+	v := testVal(t, tree)
 
-	tree := NewTree(d.v)
+	tree := NewTree(v.v)
 
 	var leaf *Leaf
 
@@ -59,8 +59,8 @@ func TestLeaf_Traverse(t *testing.T) {
 }
 
 func TestLeaf_Branches(t *testing.T) {
-	d := testDecoder(t, tree)
-	tree := NewTree(d.v)
+	v := testVal(t, tree)
+	tree := NewTree(v.v)
 
 	var leaf *Leaf
 	var i int

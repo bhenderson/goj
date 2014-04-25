@@ -1,9 +1,8 @@
 package goj
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"log"
 	"os"
 	"testing"
 )
@@ -15,46 +14,27 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	`
 	dec := testDecoder(t, input)
 
+	act := <-dec.outc
 	exp := `{"a":"b"}`
-	assert.Equal(t, testDecoder(t, exp).v, dec.v)
+	assert.Equal(t, testMarshal(t, exp), act.v)
 
-	if err := dec.Decode(""); err != nil {
-		t.Fatal(err)
-	}
+	act = <-dec.outc
 	exp = `{"c":"d"}`
-	assert.Equal(t, testDecoder(t, exp).v, dec.v)
+	assert.Equal(t, testMarshal(t, exp), act.v)
 
-	if err := dec.Decode(""); err != io.EOF {
-		t.Fatal("expected EOF, got", err)
-	}
-}
-
-func Test_copy(t *testing.T) {
-	var n *Decoder
-	d := testDecoder(t, input)
-	d.color = ColorNever
-
-	cpy := *d
-	n = &cpy
-	n.color = ColorAlways
-
-	assert.Equal(t, d.v, n.v)
-	assert.Equal(t, ColorNever, d.color)
-	assert.Equal(t, ColorAlways, n.color)
+	act = <-dec.outc
+	assert.Equal(t, (*Val)(nil), act)
 }
 
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""
-	dec := NewDecoder(os.Stdin)
+	files := []File{os.Stdin}
 
-	for {
-		if err := dec.Decode(filter); err == io.EOF {
-			break
-		} else if err != nil {
-			log.Fatal(err)
-		}
+	dec := NewDecoder(files...)
+	dec.SetColor(ColorAlways)
 
-		// dec.Val() -> decoded value
+	for val := range dec.Decode(filter, false) {
+		fmt.Println(val)
 	}
 }

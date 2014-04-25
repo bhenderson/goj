@@ -1,9 +1,7 @@
 package goj
 
 import (
-	"bytes"
 	"encoding/json"
-	"os"
 )
 
 // io.Reader without io
@@ -11,36 +9,62 @@ type reader interface {
 	Read(p []byte) (n int, err error)
 }
 
-func NewDecoder(f *os.File) (d *Decoder) {
-	d = &Decoder{file: f, dec: json.NewDecoder(f)}
+// os.File
+type File interface {
+	reader
+	Name() string
+}
+
+func NewDecoder(files ...File) (d *Decoder) {
+	//d = &Decoder{files: files, dec: json.NewDecoder(f)}
+	out := make(chan *Val)
+	d = &Decoder{files: files, outc: out}
+	go internDecode(d)
 	return
 }
 
-// BUG(bh) need public method to access Decoder.v
 type Decoder struct {
-	color colorSet
-	dec   *json.Decoder
-	file  *os.File
-	v     interface{}
+	files []File
+	outc  chan *Val
 	ind   *indent
-}
-
-// Val is the attribute reader for getting the decoded json value.
-func (d *Decoder) Val() interface{} {
-	return d.v
+	color colorSet
 }
 
 // Decode takes a filter string and decodes from reader.
-func (d *Decoder) Decode(f string) (err error) {
-	err = d.dec.Decode(&d.v)
-	if err == nil && f != "" {
-		err = filterOn(d, f)
-	}
-	return
+func (d *Decoder) Decode(f string, diff bool) <-chan *Val {
+	out := make(chan *Val)
+	go func() {
+		for v := range d.outc {
+			filterOn(v, f)
+			if diff {
+				v1 := <-d.outc
+				filterOn(v1, f)
+				v.d = v1
+			}
+			out <- v
+		}
+		close(out)
+	}()
+	return out
 }
 
-func (d *Decoder) FileName() string {
-	return d.file.Name()
+// internal decode loops through all files
+func internDecode(d *Decoder) {
+	for _, f := range d.files {
+		dec := json.NewDecoder(f)
+		for {
+			v := &Val{file: f, dec: d}
+			if err := dec.Decode(&v.v); err != nil {
+				if err.Error() == "EOF" {
+					break
+				} else {
+					// do something with the error
+				}
+			}
+			d.outc <- v
+		}
+	}
+	close(d.outc)
 }
 
 // SetColor sets the option to colorize the pretty formatting. Takes one of Colors.
@@ -48,34 +72,7 @@ func (d *Decoder) SetColor(set colorSet) {
 	d.color = set
 }
 
-// String returns nicely formatted json, optionally colored.
-func (d *Decoder) String() string {
-	id := d.indent()
-
-	if d.color.IsTrue() {
-		var buf bytes.Buffer
-		colorize(&buf, d.v, id)
-
-		return buf.String()
-	}
-
-	return d.StringColorless()
-}
-
-func (d *Decoder) StringColorless() string {
-	// TODO move this into color
-	id := d.indent()
-
-	b, err := json.MarshalIndent(d.v, id.prefix, id.indent)
-
-	// TODO better error handling.
-	if err != nil {
-		panic(err)
-	}
-
-	return string(b)
-}
-
+// should be on the option object
 func (d *Decoder) indent() *indent {
 	if d.ind == nil {
 		d.ind = &indent{indent: "  "}

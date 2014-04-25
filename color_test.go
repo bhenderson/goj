@@ -21,14 +21,14 @@ func Test_Decode(t *testing.T) {
   ]
 }`
 
-	dec := testDecoder(t, input)
-	dec.SetColor(ColorAuto)
+	v := testVal(t, input)
+	v.dec.SetColor(ColorAuto)
 
-	assert.Equal(t, output, dec.String())
+	assert.Equal(t, output, v.String())
 }
 
 func TestDecode_noColor(t *testing.T) {
-	exp := `{
+	output := `{
   "a": [
     "b",
     1
@@ -37,9 +37,8 @@ func TestDecode_noColor(t *testing.T) {
   "n": null
 }`
 
-	d := testDecoder(t, exp)
+	v := testVal(t, output)
+	v.dec.SetColor(ColorNever)
 
-	d.Decode("")
-
-	assert.Equal(t, exp, d.String())
+	assert.Equal(t, output, v.String())
 }

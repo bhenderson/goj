@@ -174,22 +174,21 @@ func Test_filterOn(t *testing.T) {
 	assert.Equal(t, e, a, m)
 }
 
-func testFilterOn(t *testing.T, exp, input string, filter string) (e, a interface{}, m string) {
-	d1 := testDecoder(t, exp)
-	d2 := testDecoder(t, input)
-	err := filterOn(d2, filter)
+func testFilterOn(t *testing.T, exp, input, filter string) (e, a interface{}, m string) {
+	v := testVal(t, input)
+	err := filterOn(v, filter)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// t.Log(d1, d2)
-	return d1.v, d2.v, filter
+	return testMarshal(t, exp), v.v, filter
 }
 
 func BenchmarkFilterOn(b *testing.B) {
-	d := testDecoder(b, input)
-	tree := NewTree(d.v)
+	v := testVal(b, input)
+	tree := NewTree(v.v)
 	p, _ := NewPath("**.price..color")
 
 	b.ResetTimer()
