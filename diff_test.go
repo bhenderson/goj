@@ -71,3 +71,31 @@ func TestDiff_single(t *testing.T) {
 
 	assert.Equal(t, exp, string(b))
 }
+
+func BenchmarkDiff_same(b *testing.B) {
+	d := testDecoder(b, input+input).Decode("")
+	v1, v2 := <-d, <-d
+	if v1 == nil || v2 == nil {
+		b.Fatal("v1 or v2 are nil")
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Diff(v1, v2)
+	}
+}
+
+func BenchmarkDiff(b *testing.B) {
+	// change the last price
+	last := input[:len(input)-10] + "0}}}"
+	d := testDecoder(b, input+last).Decode("")
+	v1, v2 := <-d, <-d
+	if v1 == nil || v2 == nil {
+		b.Fatal("v1 or v2 are nil")
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Diff(v1, v2)
+	}
+}

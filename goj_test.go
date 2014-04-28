@@ -3,6 +3,7 @@ package goj
 import (
 	"encoding/json"
 	"strings"
+	"testing"
 )
 
 // test helpers
@@ -39,16 +40,12 @@ func (t *testFile) Name() string {
 	return t.n
 }
 
-type intTest interface {
-	Fatal(args ...interface{})
-}
-
-func testVal(t intTest, input string) *Val {
+func testVal(t testing.TB, input string) *Val {
 	d := testDecoder(t, input)
 	return <-d.Decode("")
 }
 
-func testDecoder(t intTest, input string) *Decoder {
+func testDecoder(t testing.TB, input string) *Decoder {
 	f := &testFile{
 		strings.NewReader(input),
 		"test input",
@@ -56,7 +53,7 @@ func testDecoder(t intTest, input string) *Decoder {
 	return NewDecoder(f)
 }
 
-func testMarshal(t intTest, input string) interface{} {
+func testMarshal(t testing.TB, input string) interface{} {
 	r := strings.NewReader(input)
 	dec := json.NewDecoder(r)
 

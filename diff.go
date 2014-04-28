@@ -5,9 +5,15 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"reflect"
 )
 
 func Diff(v1, v2 *Val) (b []byte, err error) {
+	// don't make a system call if they are equal
+	if reflect.DeepEqual(v1, v2) {
+		return
+	}
+
 	if v1 == nil && v2 == nil {
 		return
 	}
