@@ -44,6 +44,8 @@ type indent struct {
 	depth          int
 }
 
+var defaultIndent = &indent{"", "  ", 0}
+
 func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 	var p int
 

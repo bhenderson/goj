@@ -3,12 +3,27 @@ package goj
 import (
 	"bytes"
 	"io/ioutil"
-	// "log"
 	"os"
 	"os/exec"
 )
 
 func Diff(v1, v2 *Val) (b []byte, err error) {
+	if v1 == nil && v2 == nil {
+		return
+	}
+
+	if v1 == nil {
+		v3 := *v2
+		v1 = &v3
+		v1.v = nil
+	}
+
+	if v2 == nil {
+		v3 := *v1
+		v2 = &v3
+		v2.v = nil
+	}
+
 	// TODO error handling
 	b1, _ := v1.MarshalJSON()
 	err = tempFile(b1, func(f1 *os.File) {

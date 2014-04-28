@@ -32,7 +32,14 @@ func main() {
 	dec := goj.NewDecoder(files...)
 	dec.SetColor(color)
 
-	for val := range dec.Decode(filter, diff) {
-		fmt.Println(val)
+	out := dec.Decode(filter)
+
+	for val := range out {
+		if diff {
+			b, _ := goj.Diff(val, <-out)
+			fmt.Println(string(b))
+		} else {
+			fmt.Println(val)
+		}
 	}
 }

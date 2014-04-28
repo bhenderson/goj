@@ -7,7 +7,6 @@ import (
 
 type Val struct {
 	v    interface{}
-	d    *Val
 	file File
 	dec  *Decoder // should be options, not Decoder
 }
@@ -18,12 +17,6 @@ func (v *Val) FileName() string {
 
 // String returns nicely formatted json or a diff, optionally colored.
 func (v *Val) String() string {
-	if v.d != nil {
-		// TODO handle errors
-		b, _ := Diff(v, v.d)
-		return string(b)
-	}
-
 	id := v.dec.indent()
 
 	if v.dec.color.IsTrue() {

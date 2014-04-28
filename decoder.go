@@ -31,18 +31,11 @@ type Decoder struct {
 }
 
 // Decode takes a filter string and decodes from reader.
-func (d *Decoder) Decode(f string, diff bool) <-chan *Val {
+func (d *Decoder) Decode(f string) <-chan *Val {
 	out := make(chan *Val)
 	go func() {
 		for v := range d.outc {
 			filterOn(v, f)
-			if diff {
-				v1 := <-d.outc
-				if v1 != nil {
-					filterOn(v1, f)
-				}
-				v.d = v1
-			}
 			out <- v
 		}
 		close(out)
@@ -79,7 +72,7 @@ func (d *Decoder) SetColor(set colorSet) {
 // should be on the option object
 func (d *Decoder) indent() *indent {
 	if d.ind == nil {
-		d.ind = &indent{indent: "  "}
+		d.ind = defaultIndent
 	}
 
 	return d.ind

@@ -13,7 +13,7 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 		{"c":"d"}
 	`
 	dec := testDecoder(t, input)
-	out := dec.Decode("", false)
+	out := dec.Decode("")
 
 	act := <-out
 	exp := `{"a":"b"}`
@@ -27,18 +27,6 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	assert.True(t, nil == act)
 }
 
-func Test_DecodeDiffSingleInput(t *testing.T) {
-	input := `
-		{"a":"b"}
-	`
-	dec := testDecoder(t, input)
-	out := dec.Decode("", true)
-
-	act := <-out
-	exp := `{"a":"b"}`
-	assert.Equal(t, testMarshal(t, exp), act.v)
-}
-
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""
@@ -47,7 +35,7 @@ func ExampleNewDecoder() {
 	dec := NewDecoder(files...)
 	dec.SetColor(ColorAlways)
 
-	for val := range dec.Decode(filter, false) {
+	for val := range dec.Decode(filter) {
 		fmt.Println(val)
 	}
 }

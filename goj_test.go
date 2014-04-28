@@ -45,7 +45,7 @@ type intTest interface {
 
 func testVal(t intTest, input string) *Val {
 	d := testDecoder(t, input)
-	return <-d.Decode("", false)
+	return <-d.Decode("")
 }
 
 func testDecoder(t intTest, input string) *Decoder {
