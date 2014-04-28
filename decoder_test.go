@@ -27,6 +27,12 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 	assert.True(t, nil == act)
 }
 
+func TestDecodeInvalid(t *testing.T) {
+	v := <-testDecoder(t, `{"invalid`).Decode("")
+
+	assert.True(t, nil == v)
+}
+
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""

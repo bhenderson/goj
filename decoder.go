@@ -53,7 +53,8 @@ func internDecode(d *Decoder) {
 				if err.Error() == "EOF" {
 					break
 				} else {
-					// do something with the error
+					// TODO handle error
+					break
 				}
 			} else {
 				val := &Val{v: v, file: f, dec: d}
