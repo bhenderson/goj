@@ -7,8 +7,6 @@ type leafFunc func(n *Leaf)
 // TODO not sure what I want the API to do with this.
 type branch []*Leaf
 
-const trunkStr = "trunk"
-
 // TODO the public API here needs cleanup.
 
 // Leaf is the main data type to turn a json decoded object into a linked list.
@@ -27,14 +25,14 @@ type Leaf struct {
 	child  interface{}
 	val    interface{}
 	max    int
-	kind   int
+	kind   string
 }
 
 const (
-	leafTrk = iota
-	leafKey
-	leafIdx
-	leafVal
+	leafTrunk = "trunk"
+	leafKey   = "key"
+	leafIdx   = "index"
+	leafVal   = "val"
 )
 
 // Parent returns a pointer to this leaf's parent leaf.
@@ -66,11 +64,11 @@ func (l *Leaf) Child() interface{} { return l.child }
 
 // String is a convenience method for pretty printing a leaf.
 func (l *Leaf) String() string {
-	if l.kind == leafTrk {
+	if l.kind == leafTrunk {
 		// trunk
-		return trunkStr
+		return leafTrunk
 	}
-	return fmt.Sprint(l.val)
+	return fmt.Sprintf("%s: %v", l.kind, l.val)
 }
 
 // all branches downstream of this leaf
@@ -100,7 +98,7 @@ func (l *Leaf) PruneBranches(p *Path) interface{} {
 // NewTree takes an interface and returns a special Leaf pointer, the trunk,
 // which references all other leaves.
 func NewTree(v interface{}) *Leaf {
-	return &Leaf{child: v, kind: leafTrk}
+	return &Leaf{child: v, kind: leafTrunk}
 }
 
 func getBranch(n *Leaf, b branch) {
