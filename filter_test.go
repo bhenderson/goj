@@ -172,6 +172,11 @@ func Test_filterOn(t *testing.T) {
 	}`
 	e, a, m = testFilterOn(t, exp, input, "**.price=2.99..")
 	assert.Equal(t, e, a, m)
+
+	input = `[1,2,3,{"a":"b"}]`
+	exp = `[{"a":"b"}]`
+	e, a, m = testFilterOn(t, exp, input, "**.a")
+	assert.Equal(t, e, a, m)
 }
 
 func testFilterOn(t *testing.T, exp, input, filter string) (e, a interface{}, m string) {

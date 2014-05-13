@@ -82,7 +82,7 @@ func (l *Leaf) Branches(cb func(b branch)) {
 // PruneBranches takes a Path pointer and returns a pruned copy of this leaf's
 // child.
 func (l *Leaf) PruneBranches(p *Path) interface{} {
-	v := copyZero(l.Child())
+	var v interface{}
 
 	cb := func(l2 *Leaf) {
 		l2.Traverse(func(l3 *Leaf) {
@@ -91,7 +91,10 @@ func (l *Leaf) PruneBranches(p *Path) interface{} {
 	}
 
 	filterBranches(l, p.sel, cb)
-	cleanBuild(v)
+	v = cleanBuild(v)
+	if v == nil {
+		v = copyZero(l.Child())
+	}
 	return v
 }
 
