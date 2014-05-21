@@ -54,6 +54,7 @@ func internDecode(d *Decoder) {
 					break
 				} else {
 					// TODO handle error
+					d.outc <- &Val{Error: err}
 					break
 				}
 			} else {

@@ -6,9 +6,10 @@ import (
 )
 
 type Val struct {
-	v    interface{}
-	file File
-	dec  *Decoder // should be options, not Decoder
+	v     interface{}
+	file  File
+	dec   *Decoder // should be options, not Decoder
+	Error error
 }
 
 func (v *Val) FileName() string {

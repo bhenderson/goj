@@ -1,7 +1,7 @@
 package goj
 
 import (
-	terminal "github.com/bhenderson/terminal-go"
+	terminal "github.com/bhenderson/terminalgo"
 )
 
 type badColor struct{}

@@ -35,6 +35,9 @@ func main() {
 	out := dec.Decode(filter)
 
 	for val := range out {
+		if val.Error != nil {
+			fmt.Println(val.Error)
+		}
 		if diff {
 			b, _ := goj.Diff(val, <-out)
 			fmt.Println(string(b))

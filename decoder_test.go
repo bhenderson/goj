@@ -30,7 +30,8 @@ func Test_DecodeMultipleInputs(t *testing.T) {
 func TestDecodeInvalid(t *testing.T) {
 	v := <-testDecoder(t, `{"invalid`).Decode("")
 
-	assert.True(t, nil == v)
+	assert.Nil(t, (&Val{}).Error)
+	assert.NotNil(t, v.Error)
 }
 
 func ExampleNewDecoder() {
