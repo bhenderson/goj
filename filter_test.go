@@ -6,6 +6,7 @@ import (
 )
 
 func Test_filterOn(t *testing.T) {
+	input := input
 	var exp, m string
 	var e, a interface{}
 
