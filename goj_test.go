@@ -56,6 +56,8 @@ func testDecoder(t testing.TB, input string) *Decoder {
 func testMarshal(t testing.TB, input string) interface{} {
 	r := strings.NewReader(input)
 	dec := json.NewDecoder(r)
+	// TODO this logic should be shared with the lib.
+	dec.UseNumber()
 
 	var v interface{}
 	if err := dec.Decode(&v); err != nil {

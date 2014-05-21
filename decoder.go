@@ -47,6 +47,8 @@ func (d *Decoder) Decode(f string) <-chan *Val {
 func internDecode(d *Decoder) {
 	for _, f := range d.files {
 		dec := json.NewDecoder(f)
+		// use json.Number instead of float64 for better precision
+		dec.UseNumber()
 		for {
 			var v interface{}
 			if err := dec.Decode(&v); err != nil {

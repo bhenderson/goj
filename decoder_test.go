@@ -34,6 +34,17 @@ func TestDecodeInvalid(t *testing.T) {
 	assert.NotNil(t, v.Error)
 }
 
+func TestDecodeNumber(t *testing.T) {
+	input := `{"foo":1111111111222222222233333333334444444444}`
+
+	dec := testDecoder(t, input)
+	act := <-dec.Decode("")
+
+	data := "{\n  \"foo\": 1111111111222222222233333333334444444444\n}"
+
+	assert.Equal(t, data, act.String())
+}
+
 func ExampleNewDecoder() {
 	// Decode a line of json at a time, optionally filtering the result.
 	filter := ""

@@ -81,7 +81,7 @@ func colorize(buf *bytes.Buffer, v interface{}, idt *indent) (err error) {
 			buf.WriteByte(',')
 		}
 		postfix(idt, buf, ']', p)
-	case int, float64:
+	case int, float64, json.Number:
 		err = yellowFunc(buf, x)
 	case string:
 		err = greenFunc(buf, x)
