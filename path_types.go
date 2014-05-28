@@ -32,19 +32,32 @@ type pathKey struct {
 
 func (p *pathKey) Equal(l *Leaf) bool {
 	var rhs string
-	if l.kind != leafKey {
+	if l.kind == leafKey {
+		rhs = l.val.(string)
+	} else {
 		if l.kind != leafIdx {
 			return false
 		}
 		rhs = fmt.Sprint(l.val)
-	} else {
-		rhs = l.val.(string)
 	}
-	if p.val == rhs {
-		return true
+
+	var old string
+	var i int
+	for _, lhs := range strings.Split(p.val, "|") {
+		i = len(old) - 2
+		if i > 0 && old[i+1] == '\\' {
+			lhs = old[:len(old)] + "|" + lhs
+		}
+		if lhs == rhs {
+			return true
+		}
+		ok, err := filepath.Match(lhs, rhs)
+		if ok && err == nil {
+			return true
+		}
+		old = lhs
 	}
-	ok, err := filepath.Match(p.val, rhs)
-	return ok && err == nil
+	return false
 }
 
 type pathVal struct {

@@ -6,7 +6,16 @@ import (
 )
 
 func TestPath_Compile(t *testing.T) {
-	exp, act, msg := helpPath(`store`, &pathKey{"store"})
+	var exp, act []pathSel
+	var msg string
+
+	exp, act, msg = helpPath(`store`, &pathKey{"store"})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`store|foo`, &pathKey{"store|foo"})
+	assert.Equal(t, exp, act, msg)
+
+	exp, act, msg = helpPath(`store\\|foo`, &pathKey{`store\|foo`})
 	assert.Equal(t, exp, act, msg)
 
 	exp, act, msg = helpPath(`.store`, &pathKey{"store"})
@@ -107,7 +116,6 @@ func TestPath_CompileEscapeChar(t *testing.T) {
 
 	exp, act, msg = helpPath(`=hi\.mom..`, &pathKey{"*"}, &pathVal{"hi.mom"}, &pathParent{})
 	assert.Equal(t, exp, act, msg)
-
 }
 
 func BenchmarkNewPath(b *testing.B) {
