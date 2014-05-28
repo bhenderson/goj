@@ -1,6 +1,9 @@
 package goj
 
 func filterOn(v *Val, s string) error {
+	if s == "" {
+		return nil
+	}
 	p, err := NewPath(s)
 
 	if err != nil {
