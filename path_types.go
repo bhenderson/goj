@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -30,6 +31,26 @@ type pathKey struct {
 	val string
 }
 
+var special = map[rune]struct{}{
+	'{': struct{}{},
+	'}': struct{}{},
+	'(': struct{}{},
+	')': struct{}{},
+	'|': struct{}{},
+	'$': struct{}{},
+	'+': struct{}{},
+	'*': struct{}{},
+}
+
+func isReg(s string) bool {
+	for _, c := range s {
+		if _, ok := special[c]; ok {
+			return true
+		}
+	}
+	return false
+}
+
 func (p *pathKey) Equal(l *Leaf) bool {
 	var rhs string
 	if l.kind == leafKey {
@@ -41,21 +62,23 @@ func (p *pathKey) Equal(l *Leaf) bool {
 		rhs = fmt.Sprint(l.val)
 	}
 
-	var old string
-	var i int
-	for _, lhs := range strings.Split(p.val, "|") {
-		i = len(old) - 2
-		if i > 0 && old[i+1] == '\\' {
-			lhs = old[:len(old)] + "|" + lhs
+	lhs := p.val
+	if lhs == rhs {
+		return true
+	}
+	ok, err := filepath.Match(lhs, rhs)
+	if ok && err == nil {
+		return true
+	}
+	// TODO performance hit?
+	if isReg(lhs) {
+		re, err := regexp.Compile("^" + lhs + "$")
+		if err != nil {
+			return false
 		}
-		if lhs == rhs {
+		if re.MatchString(rhs) {
 			return true
 		}
-		ok, err := filepath.Match(lhs, rhs)
-		if ok && err == nil {
-			return true
-		}
-		old = lhs
 	}
 	return false
 }

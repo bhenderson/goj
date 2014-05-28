@@ -29,20 +29,19 @@ func Test_pathKey_Equal(t *testing.T) {
 	p = &pathKey{"st[^a-np-z]re"}
 	assert.True(t, p.Equal(l))
 
-	p = &pathKey{"store|blah"}
+	l.val = "store_foo"
+	p = &pathKey{"store_(foo|bar)"}
 	assert.True(t, p.Equal(l))
-	l.val = "blah"
+	l.val = "store_bar"
 	assert.True(t, p.Equal(l))
-	l.val = "store|blah"
+	l.val = "store_baz"
 	assert.False(t, p.Equal(l))
-	p = &pathKey{`store\|blah\|foo|bar`}
+	p = &pathKey{"baz"}
 	assert.False(t, p.Equal(l))
-	l.val = "store|blah|foo"
-	assert.True(t, p.Equal(l))
-	l.val = "bar"
-	assert.True(t, p.Equal(l))
-	p = &pathKey{`store`}
-	l.val = "store|blah"
+	l.val = "foo_store_foo"
+	p = &pathKey{"store_(foo)"}
+	assert.False(t, p.Equal(l))
+	l.val = "store_foos"
 	assert.False(t, p.Equal(l))
 
 	l = &Leaf{val: 0, max: 1, kind: leafIdx}
