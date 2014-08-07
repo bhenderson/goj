@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/bhenderson/goj"
 	"log"
+	"os"
 )
 
 var (
@@ -33,6 +34,7 @@ func main() {
 	dec.SetColor(color)
 
 	out := dec.Decode(filter)
+	retval := 0
 
 	for val := range out {
 		if val.Error != nil {
@@ -40,9 +42,14 @@ func main() {
 		}
 		if diff {
 			b, _ := goj.Diff(val, <-out)
-			fmt.Println(string(b))
+			if len(b) > 0 {
+				retval = 1
+			}
+			fmt.Printf("%s", b)
 		} else {
 			fmt.Println(val)
 		}
 	}
+
+	os.Exit(retval)
 }
